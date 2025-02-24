@@ -1,0 +1,53 @@
+#
+# openwrt-go-graphite
+#
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  feeds-configure:
+    desc: Configure feeds
+    dir: openwrt-sdk
+    cmds:
+      - cp feeds.conf.default feeds.conf
+      - echo 'src-link graphite {{joinPath .ROOT_DIR "packages"}}' >> feeds.conf
+
+  feeds-install:
+    desc: Install and/or update feeds
+    dir: openwrt-sdk
+    cmds:
+      - ./scripts/feeds update -a
+      - ./scripts/feeds install -a
+      - ./scripts/feeds install go-carbon
+
+  sdk-configure:
+    desc: Configure OpenWRT SDK
+    dir: openwrt-sdk
+    cmds:
+      - cp {{joinPath .ROOT_DIR "openwrt" "diffconfig" }} .config
+      - make defconfig
+
+  package-compile:
+    desc: Compile package
+    dir: openwrt-sdk
+    cmds:
+      - make package/go-carbon/compile {{.CLI_ARGS}}
+      - make package/index
+
+  package-clean:
+    desc: Clean-up package
+    dir: openwrt-sdk
+    cmds:
+      - make package/go-carbon/clean {{.CLI_ARGS}}
+
+  default:
+    desc: Build packages
+    cmds:
+      - task: feeds-configure
+      - task: feeds-install
+      - task: sdk-configure
+      - task: package-clean
+      - task: package-compile
