@@ -4,3 +4,4 @@
 # CONFIG_DEVEL is not set
 # CONFIG_SIGNED_PACKAGES is not set
 CONFIG_PACKAGE_go-carbon=m
+CONFIG_PACKAGE_carbonapi=m
