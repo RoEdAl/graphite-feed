@@ -2,7 +2,7 @@
 # CONFIG_ALL_KMODS is not set
 # CONFIG_ALL_NONSHARED is not set
 # CONFIG_DEVEL is not set
-# CONFIG_SIGNED_PACKAGES is not set
+CONFIG_SIGNED_PACKAGES=y
 CONFIG_PACKAGE_go-carbon=m
 CONFIG_PACKAGE_carbonapi=m
 CONFIG_PACKAGE_carbon-c-relay-full=m
