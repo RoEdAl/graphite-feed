@@ -3,4 +3,5 @@ Taskfile.yaml
 openwrt-sdk
 openwrt-sdk-*/
 openwrt-sdk-*.tar.*
+feeds/
 

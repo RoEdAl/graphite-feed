@@ -44,6 +44,18 @@ tasks:
       - make package/go-carbon/clean {{.CLI_ARGS}}
       - make package/carbonapi/clean {{.CLI_ARGS}}
 
+  copy-packages:
+    desc: Copy packages
+    cmds:
+      - cmd: mkdir -p feeds
+      - cmd: |
+          for p in openwrt-sdk/bin/packages/*/graphite; do
+            s=${p%/graphite}
+            s=${s#openwrt-sdk/bin/packages/}
+            mkdir -p feeds/$s
+            cp -r $p feeds/$s
+          done
+
   default:
     desc: Build packages
     cmds:
@@ -52,3 +64,4 @@ tasks:
       - task: sdk-configure
       - task: package-clean
       - task: package-compile
+      - task: copy-packages
