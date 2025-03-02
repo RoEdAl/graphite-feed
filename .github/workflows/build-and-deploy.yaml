@@ -150,6 +150,15 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Install (go-)task
+        run: |
+          wget -q http://github.com/go-task/task/releases/latest/download/task_linux_amd64.deb
+          sudo dpkg --install task_linux_amd64.deb
+          rm task_linux_amd64.deb
+
+      - name: Checkout
+        uses: actions/checkout@v4          
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
@@ -166,19 +175,8 @@ jobs:
           path: feeds/signing-key
           name: signing-key
 
-      - name: Disable Jekyll
-        run: touch feeds/.nojekyll
-
-      - name: Checkout indexer
-        uses: actions/checkout@v4
-        with:
-          repository: rioastamal/shdir-listing
-          path: shdir-listing
-
       - name: Index feeds
-        run: |
-          chmod +x shdir-listing/shdir-listing.sh
-          shdir-listing/shdir-listing.sh -d 3 feeds
+        run: task directory-listing
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

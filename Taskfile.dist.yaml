@@ -56,6 +56,69 @@ tasks:
             cp -r $p feeds/$s
           done
 
+  create-index:
+    desc: Create index.html
+    internal: true
+    dir: feeds
+    silent: true
+    requires:
+      vars: ['DIR', 'TIMESTAMP']
+    vars:
+      SDIR: '{{.DIR | default "."}}'
+      DOC_DIR: '{{.DIR | default "/"}}'
+      INDEX_HTML: '{{joinPath .SDIR "index.html"}}'
+      HTML_HEADER: >-
+        <!DOCTYPE html>
+        <html>
+        <header><title>Directory listing of {{.DOC_DIR}}</title></header>
+        <body>
+        <h2>Directory Listing: <em>{{.DOC_DIR}}</em></h2>
+        <ul>
+      HTML_DIR_UP: >-
+        {{if ne .SDIR  "."}}
+        <li><a href=\"../index.html\"><b>⌈··⌉</b></a></li>
+        {{end}}
+      HTML_LIST:
+        sh: |
+          ls -1 --group-directories-first "{{.SDIR}}" --ignore=index.html --ignore=tmp | while read file; do
+              if [ -d "{{.SDIR}}/${file}" ]; then
+                echo "<li><a href=\"${file}/index.html\"><b>[${file}]</b></a></li>"
+              elif [ "${file##*.}" = "ipk" ]; then
+                echo "<li><a href=\"${file}\"><em>${file}</em></a></li>"
+              else
+                echo "<li><a href=\"${file}\">${file}</a></li>"
+              fi
+          done
+      HTML_FOOTER: >-
+        </ul>
+        <hr/>
+        <p>Generated on {{.TIMESTAMP}}</p></body></html>
+
+    cmds:
+      - cmd: "echo 'HTML index: {{.INDEX_HTML}}'"
+      - cmd: |
+          cat << EOF > "{{.INDEX_HTML}}"
+          {{.HTML_HEADER}}
+          {{.HTML_DIR_UP}}
+          {{.HTML_LIST}}
+          {{.HTML_FOOTER}}
+          EOF
+
+  directory-listing:
+    desc: List feeds directory
+    dir: feeds
+    vars:
+      TIMESTAMP: '{{date "2006-01-02T15:04:05Z07:00" now}}'
+      DIRS:
+        sh: find . -type d -not -path '*/[@.]*' -not -path '*/tmp' -printf '%P\n'
+    cmds:
+      - cmd: touch -d "{{.TIMESTAMP}}" .nojekyll
+      - for: { var: DIRS, split: "\n" }
+        task: create-index
+        vars:
+          DIR: '{{.ITEM}}'
+          TIMESTAMP: '{{.TIMESTAMP}}'
+
   default:
     desc: Build packages
     cmds:
