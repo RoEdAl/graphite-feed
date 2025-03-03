@@ -4,6 +4,9 @@
 
 version: '3'
 
+env:
+  LC_COLLATE: en_US.utf8
+
 tasks:
   feeds-configure:
     desc: Configure feeds
@@ -65,34 +68,59 @@ tasks:
       vars: ['DIR', 'TIMESTAMP']
     vars:
       SDIR: '{{.DIR | default "."}}'
-      DOC_DIR: '{{.DIR | default "/"}}'
+      DOC_DIR: '{{joinPath "/" .DIR}}'
       INDEX_HTML: '{{joinPath .SDIR "index.html"}}'
       HTML_HEADER: >-
         <!DOCTYPE html>
-        <html>
-        <header><title>Directory listing of {{.DOC_DIR}}</title></header>
+        <html lang="en">
+        <head>
+          <title>Directory listing of {{.DOC_DIR}}</title>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            ul        { list-style-type: circle }
+            li.updir  { list-style-type: none; font-size: larger; font-weight: bold }
+            li.feed   { list-style-type: disc; font-weight: bold }
+            li.feed:before   { content: "\2772\2009" }
+            li.feed:after    { content: "\2009\2773" }
+            li.folder:before { content: "\2329\2009" }
+            li.folder:after  { content: "\2009\232A" }
+            li.folder { font-weight: bold }
+            li.ipk    { list-style-type: disclosure-closed; font-size: larger }
+            li.script { list-style-type: square; font-size: larger; font-family: monospace; }
+          </style>
+        </head>
         <body>
         <h2>Directory Listing: <em>{{.DOC_DIR}}</em></h2>
         <ul>
       HTML_DIR_UP: >-
         {{if ne .SDIR  "."}}
-        <li><a href=\"../index.html\"><b>⌈··⌉</b></a></li>
+        <li class="updir"><a href=\"../index.html\">··</a></li>
         {{end}}
       HTML_LIST:
         sh: |
           ls -1 --group-directories-first "{{.SDIR}}" --ignore=index.html --ignore=tmp | while read file; do
+              ehref="$file"
               if [ -d "{{.SDIR}}/${file}" ]; then
-                echo "<li><a href=\"${file}/index.html\"><b>[${file}]</b></a></li>"
+                ehref=${file}/index.html
+                if [ -d "{{.SDIR}}/${file}/graphite" ]; then
+                  eclass=feed
+                else
+                  eclass=folder
+                fi
               elif [ "${file##*.}" = "ipk" ]; then
-                echo "<li><a href=\"${file}\"><em>${file}</em></a></li>"
+                eclass=ipk
+              elif [ "${file##*.}" = "sh" ]; then
+                eclass=script
               else
-                echo "<li><a href=\"${file}\">${file}</a></li>"
+                eclass=file
               fi
+              echo "<li class=\"${eclass}\"><a href=\"${ehref}\">${file}</a></li>"
           done
       HTML_FOOTER: >-
         </ul>
         <hr/>
-        <p>Generated on {{.TIMESTAMP}}</p></body></html>
+        <p>Generated on <code>{{.TIMESTAMP}}</code>.</p></body></html>
 
     cmds:
       - cmd: "echo 'HTML index: {{.INDEX_HTML}}'"
@@ -113,6 +141,7 @@ tasks:
         sh: find . -type d -not -path '*/[@.]*' -not -path '*/tmp' -printf '%P\n'
     cmds:
       - cmd: touch -d "{{.TIMESTAMP}}" .nojekyll
+      - cmd: cp ../openwrt/graphite-feed.sh .
       - for: { var: DIRS, split: "\n" }
         task: create-index
         vars:
