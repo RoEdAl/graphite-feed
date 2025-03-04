@@ -21,7 +21,7 @@ tasks:
     cmds:
       - ./scripts/feeds update -a
       - ./scripts/feeds install -a
-      - ./scripts/feeds install go-carbon carbonapi carbon-c-relay-full carbon-c-relay-nossl carbon-c-relay-tiny
+      - ./scripts/feeds install go-carbon carbonapi carbon-c-relay-full carbon-c-relay-nossl carbon-c-relay-tiny carbon-relay-ng
 
   sdk-configure:
     desc: Configure OpenWRT SDK
@@ -37,6 +37,7 @@ tasks:
       - make package/carbon-c-relay/compile {{.CLI_ARGS}}
       - make package/go-carbon/compile {{.CLI_ARGS}}
       - make package/carbonapi/compile {{.CLI_ARGS}}
+      - make package/carbon-relay-ng/compile {{.CLI_ARGS}}
       - make package/index
 
   package-clean:
@@ -46,6 +47,7 @@ tasks:
       - make package/carbon-c-relay/clean {{.CLI_ARGS}}
       - make package/go-carbon/clean {{.CLI_ARGS}}
       - make package/carbonapi/clean {{.CLI_ARGS}}
+      - make package/carbon-relay-ng/clean {{.CLI_ARGS}}
 
   copy-packages:
     desc: Copy packages
