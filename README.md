@@ -1,7 +1,7 @@
 # Various *OpenWRT* packages of *Graphite*-related projects
 
 > [!IMPORTANT]
-> The only supported *OpenWRT* version is **24.04**.
+> The only supported *OpenWRT* version is **24.10**.
 
 ## Packages
 
@@ -14,6 +14,8 @@
   * `carbon-c-relay-full`
   * `carbon-c-relay-nossl`
   * **`carbon-c-relay-tiny`**
+
+* [grafana/carbon-relay-ng](https://github.com/grafana/carbon-relay-ng)
 
 ## Installation
 
