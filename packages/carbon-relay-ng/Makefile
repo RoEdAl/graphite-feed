@@ -29,7 +29,7 @@ define Package/carbon-relay-ng
 	TITLE:=Fast carbon relay+aggregator
 	URL:=https://github.com/grafana/carbon-relay-ng
 	DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
-	USERID=carbon-relay:carbon-relay
+	USERID:=carbon-relay:carbon-relay
 endef
 
 define Package/carbon-relay-ng/description
