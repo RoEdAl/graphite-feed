@@ -68,6 +68,9 @@ jobs:
           - target: mipsel_mips32
             sdk-path: bcm47xx/generic
             sdk-name: bcm47xx-generic_gcc-13.3.0_musl
+          - target: riscv64_riscv64
+            sdk-path: starfive/generic
+            sdk-name: starfive-generic_gcc-13.3.0_musl
 
     steps:
       - name: Install required packages
