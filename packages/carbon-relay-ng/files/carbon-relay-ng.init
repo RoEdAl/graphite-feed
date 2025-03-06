@@ -17,5 +17,12 @@ start_service() {
   procd_set_param user carbon-relay
   procd_set_param group carbon-relay
   procd_set_param no_new_privs 1
+  procd_set_param term_timeout 15
+  procd_add_jail "$NAME" ronly requirejail log
+  procd_add_jail_mount /etc/hosts
+  procd_add_jail_mount /etc/TZ
+  [ -s /etc/ssl/certs/ca-certificates.crt ] && procd_add_jail_mount /etc/ssl/certs/ca-certificates.crt
+  procd_add_jail_mount "$CONFIG_FILE"
+  procd_add_jail_mount_rw /var/spool/carbon-relay-ng
   procd_close_instance
 }
