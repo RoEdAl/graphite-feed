@@ -72,6 +72,12 @@ jobs:
           - target: riscv64_riscv64
             sdk-path: starfive/generic
             sdk-name: starfive-generic_gcc-13.3.0_musl
+          - target: mips64_mips64r2
+            sdk-path: malta/be64
+            sdk-name: malta-be64_gcc-13.3.0_musl
+          - target: mips64el_mips64r2
+            sdk-path: malta/le64
+            sdk-name: malta-le64_gcc-13.3.0_musl            
 
     steps:
       - name: Install required packages
