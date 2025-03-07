@@ -109,40 +109,39 @@ jobs:
 
       - name: Prepare signing key
         run: |
-          cat << USIGN > openwrt-sdk/key-build
+          mkdir -p signing-key
+          
+          cat << USIGN > signing-key/key-build
           ${{secrets.BUILDKEY}}
           USIGN
 
-          cat << USIGN > openwrt-sdk/key-build.pub
+          cat << USIGN > signing-key/key-build.pub
           ${{secrets.BUILDKEY_PUB}}
           USIGN
 
       - name: Build packages
-        run: task
+        run: task build
 
-      - name: Calculate fingerprint of signing key
-        if: matrix.target.target == 'x86_64'
-        run: |
-          fingerprint=$(openwrt-sdk/staging_dir/host/bin/usign -F -p openwrt-sdk/key-build.pub)
-          echo "::notice title=Signing key fingerprint::$fingerprint"
-          mkdir signing-key
-          cp openwrt-sdk/key-build.pub signing-key/$fingerprint
-
-      - name: Upload signing key
-        if: matrix.target.target == 'x86_64'
-        uses: actions/upload-artifact@v4
-        with:
-          name: signing-key
-          path: signing-key/*
-          if-no-files-found: error
-          retention-days: 1
-          compression-level: 0
+      - name: Copy packages
+        run: task copy-packages
 
       - name: Upload feed
         uses: actions/upload-artifact@v4
         with:
           name: owrt-feed-${{ matrix.target.target }}
           path: feeds/*
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+      - name: Upload signing key
+        if: matrix.target.target == 'x86_64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: signing-key
+          path: |
+            signing-key/*
+            !signing-key/key-build
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
@@ -176,11 +175,11 @@ jobs:
       - name: Download signing key
         uses: actions/download-artifact@v4
         with:
-          path: feeds/signing-key
+          path: signing-key
           name: signing-key
 
-      - name: Index feeds
-        run: task directory-listing
+      - name: Prepare feeds
+        run: task feeds-prepare
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

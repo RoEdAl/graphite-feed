@@ -8,6 +8,74 @@ env:
   LC_COLLATE: en_US.utf8
 
 tasks:
+  signing-key-create:
+    desc: Prepare signing keys
+    status:
+      - test -s signing-key/key-build
+      - test -s signing-key/key-build.pub
+    preconditions:
+      - test -x openwrt-sdk/staging_dir/host/bin/usign
+    cmds:
+      - cmd: mkdir -p signing-key
+      - cmd: |
+          #
+          # https://openwrt.org/docs/guide-user/security/keygen#obtain_usign
+          #
+          openwrt-sdk/staging_dir/host/bin/usign -G \
+            -c 'OpenWRT usign key of Edmunt Pienkowsky' \
+            -s signing-key/key-build \
+            -p signing-key/key-build.pub
+        silent: true
+
+  signing-key-fingerprint:
+    desc: Compute fingerprint of signing key
+    deps:
+      - signing-key-create
+    preconditions:
+      - test -x openwrt-sdk/staging_dir/host/bin/usign
+      - test -s signing-key/key-build.pub      
+    vars:
+      FINGERPRINT:
+        sh: openwrt-sdk/staging_dir/host/bin/usign -F -p signing-key/key-build.pub
+    cmds:
+      - echo '{{.FINGERPRINT}}' > signing-key/fingerprint
+      - touch -cr signing-key/key-build.pub signing-key/fingerprint
+
+  signing-key-copy:
+    desc: Copy signing keys to OpenWRT SDK directory
+    status:
+      - test -s openwrt-sdk/key-build
+      - test -s openwrt-sdk/key-build.pub
+    preconditions:
+      - test -d openwrt-sdk
+    deps:
+      - signing-key-create
+    cmds:
+      - cmd: cp signing-key/key-build openwrt-sdk
+        silent: true
+      - cmd: cp signing-key/key-build.pub openwrt-sdk
+        silent: true
+
+  signing-key-init:
+    internal: true
+    cmds:
+      - task: signing-key-create
+      - task: signing-key-fingerprint
+      - task: signing-key-copy
+
+  signing-key-publish:
+    desc: Publish signing key
+    preconditions:
+      - test -s signing-key/key-build.pub
+      - test -s signing-key/fingerprint
+      - test -d feeds
+    vars:
+      FINGERPRINT:
+        sh: cat signing-key/fingerprint
+    cmds:
+      - mkdir -p feeds/signing-key
+      - cp signing-key/key-build.pub feeds/signing-key/{{.FINGERPRINT}}
+
   feeds-configure:
     desc: Configure feeds
     dir: openwrt-sdk
@@ -22,6 +90,12 @@ tasks:
       - ./scripts/feeds update -a
       - ./scripts/feeds install -a
       - ./scripts/feeds install go-carbon carbonapi carbon-c-relay-full carbon-c-relay-nossl carbon-c-relay-tiny carbon-relay-ng
+
+  feeds-init:
+    internal: true
+    cmds:
+      - task: feeds-configure
+      - task: feeds-install
 
   sdk-configure:
     desc: Configure OpenWRT SDK
@@ -125,7 +199,7 @@ tasks:
         <p>Generated on <code>{{.TIMESTAMP}}</code>.</p></body></html>
 
     cmds:
-      - cmd: "echo 'HTML index: {{.INDEX_HTML}}'"
+      - cmd: "echo 'Creating index: {{.INDEX_HTML}}'"
       - cmd: |
           cat << EOF > "{{.INDEX_HTML}}"
           {{.HTML_HEADER}}
@@ -135,27 +209,43 @@ tasks:
           EOF
 
   directory-listing:
-    desc: List feeds directory
+    internal: true
     dir: feeds
+    requires:
+      vars:
+        - TIMESTAMP
     vars:
-      TIMESTAMP: '{{date "2006-01-02T15:04:05Z07:00" now}}'
       DIRS:
         sh: find . -type d -not -path '*/[@.]*' -not -path '*/tmp' -printf '%P\n'
     cmds:
-      - cmd: touch -d "{{.TIMESTAMP}}" .nojekyll
-      - cmd: cp ../openwrt/graphite-feed.sh .
       - for: { var: DIRS, split: "\n" }
         task: create-index
         vars:
           DIR: '{{.ITEM}}'
+          TIMESTAMP: '{{.TIMESTAMP}}'    
+
+  feeds-prepare:
+    desc: Prepare feeds directory
+    dir: feeds
+    vars:
+      TIMESTAMP: '{{date "2006-01-02T15:04:05Z07:00" now}}'
+    cmds:
+      - cmd: touch -d "{{.TIMESTAMP}}" .nojekyll
+      - cmd: cp ../openwrt/graphite-feed.sh .
+      - task: signing-key-publish
+      - task: directory-listing
+        vars:
           TIMESTAMP: '{{.TIMESTAMP}}'
 
   default:
+    aliases:
+      - build
     desc: Build packages
+    deps:
+      - signing-key-init
+      - feeds-init
     cmds:
-      - task: feeds-configure
-      - task: feeds-install
       - task: sdk-configure
       - task: package-clean
       - task: package-compile
-      - task: copy-packages
+
