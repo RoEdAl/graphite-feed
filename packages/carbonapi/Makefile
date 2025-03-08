@@ -30,7 +30,7 @@ define Package/carbonapi
 	TITLE:=Golang implementation of Graphite API
 	URL:=https://github.com/go-graphite/carbonapi
 	DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
-	USERID=graphite:graphite
+	USERID:=graphite:graphite
 endef
 
 define Package/carbonapi/description

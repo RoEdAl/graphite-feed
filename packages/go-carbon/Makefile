@@ -29,7 +29,7 @@ define Package/go-carbon
 	TITLE:=Golang implementation of Graphite/Carbon server
 	URL:=https://github.com/go-graphite/go-carbon
 	DEPENDS:=$(GO_ARCH_DEPENDS)
-	USERID=carbon:carbon
+	USERID:=carbon:carbon
 endef
 
 define Package/go-carbon/description

@@ -32,7 +32,7 @@ define Package/gostatsd
 	TITLE:=An implementation of Etsy's statsd in Go with tags support
 	URL:=https://github.com/atlassian/gostatsd
 	DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
-	USERID=statsd:statsd
+	USERID:=statsd:statsd
 endef
 
 define Package/gostatsd/description
