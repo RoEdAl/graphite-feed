@@ -49,8 +49,8 @@ define Package/carbonapi/install
 endef
 
 define Package/carbonapi/conffiles
-/etc/go-carbon/carbonapi/carbonapi.yaml
-/etc/go-carbon/carbonapi/
+/etc/carbonapi/carbonapi.yaml
+/etc/carbonapi/
 endef
 
 $(eval $(call GoBinPackage,carbonapi))
