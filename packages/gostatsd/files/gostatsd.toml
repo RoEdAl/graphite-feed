@@ -1,0 +1,20 @@
+backends=['stdout', 'graphite']
+default-tags=[]
+expiry-interval='5m'
+flush-interval='15s'
+filters='no-hostname'
+
+[graphite]
+address = "localhost:2003"
+dial_timeout = '5s'
+write_timeout = '30s'
+mode = 'basic'
+global_prefix = 'stats'
+global_suffix = ''
+prefix_counter = 'counters'
+prefix_timer = 'timers'
+prefix_gauge = 'gauges'
+prefix_sets = 'sets'
+
+[filter.no-hostname]
+drop-host=true

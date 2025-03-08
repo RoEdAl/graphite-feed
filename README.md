@@ -16,6 +16,7 @@
   * **`carbon-c-relay-tiny`**
 
 * [grafana/carbon-relay-ng](https://github.com/grafana/carbon-relay-ng)
+* [atlassian/gostatsd](https://github.com/atlassian/gostatsd)
 
 ## Installation
 
