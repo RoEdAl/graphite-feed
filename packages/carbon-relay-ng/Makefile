@@ -53,12 +53,14 @@ define Package/carbon-relay-ng/install
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) files/carbon-relay-ng.init $(1)/etc/init.d/carbon-relay-ng
 	$(INSTALL_DIR) $(1)/var/spool/carbon-relay-ng
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) files/carbon-relay-ng.config $(1)/etc/config/carbon-relay-ng
 endef
 
 define Package/carbon-relay-ng/conffiles
+/etc/config/carbon-relay-ng
 /etc/go-carbon/carbon-relay-ng/carbon-relay-ng.yaml
 /etc/go-carbon/carbon-relay-ng/
-/var/spool/carbon-relay-ng/
 endef
 
 define Package/carbon-relay-ng/postinst

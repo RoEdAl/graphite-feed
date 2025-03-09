@@ -46,11 +46,13 @@ define Package/carbonapi/install
 	$(INSTALL_DATA) files/carbonapi.yaml $(1)/etc/carbonapi
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) files/carbonapi.init $(1)/etc/init.d/carbonapi
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) files/carbonapi.config $(1)/etc/config/carbonapi
 endef
 
 define Package/carbonapi/conffiles
+/etc/config/carbonapi
 /etc/carbonapi/carbonapi.yaml
-/etc/carbonapi/
 endef
 
 $(eval $(call GoBinPackage,carbonapi))

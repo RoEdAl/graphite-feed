@@ -6,11 +6,40 @@ STOP=10
 USE_PROCD=1
 NAME=gostatsd
 PROG=/usr/bin/gostatsd
-CONFIG_FILE=/etc/gostatsd/gostatsd.toml
+CONFIG_DIR=/etc/gostatsd
 
-start_service() {
-  procd_open_instance "$NAME"
-  procd_set_param command "$PROG" "--config-path=$CONFIG_FILE"
+echoerr() { echo "$@" 1>&2; }
+
+get_config_path() {
+  if [[ "$1" =~ ^/ ]]; then
+    echo $1
+  else
+    readlink -f "${CONFIG_DIR}/$1"
+  fi
+}
+
+validate_section_service() {
+  uci_load_validate "${NAME}" service "$1" "$2" \
+    'enable:bool:0' \
+    'config_file:string:gostatsd.toml'
+}
+
+service_instance() {
+  [ "$2" = 0 ] || {
+    echoerr "Validation failed"
+    return 1
+  }
+
+  [ "${enable}" = 0 ] && return 1
+
+  local config_path=$(get_config_path "${config_file}")
+  if [ -z "${config_path}" ]; then
+    echoerr "Invalid configuration file: ${config_file}"
+    return 1
+  fi
+
+  procd_open_instance "${NAME}-${1}"
+  procd_set_param command "$PROG" "--config-path=${config_path}"
   procd_set_param respawn
   procd_set_param stdout 1
   procd_set_param stderr 1
@@ -18,10 +47,23 @@ start_service() {
   procd_set_param group statsd
   procd_set_param no_new_privs 1
   procd_set_param term_timeout 10
-  procd_add_jail "$NAME" ronly requirejail log
+  procd_add_jail "${NAME}-${1}" ronly requirejail log
   procd_add_jail_mount /etc/hosts
   procd_add_jail_mount /etc/TZ
   procd_add_jail_mount /etc/ssl/certs/ca-certificates.crt
-  procd_add_jail_mount "$CONFIG_FILE"
+  procd_add_jail_mount "${config_path}"
   procd_close_instance
+}
+
+start_service() {
+  config_load "${NAME}"
+  config_foreach validate_section_service service service_instance
+}
+
+service_triggers() {
+  procd_add_reload_trigger "${NAME}"
+
+  procd_open_validate
+  validate_section_service
+  procd_close_validate
 }

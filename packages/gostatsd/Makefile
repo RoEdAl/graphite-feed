@@ -48,11 +48,13 @@ define Package/gostatsd/install
 	$(INSTALL_DATA) files/gostatsd.toml $(1)/etc/gostatsd
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) files/gostatsd.init $(1)/etc/init.d/gostatsd
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) files/gostatsd.config $(1)/etc/config/gostatsd
 endef
 
 define Package/gostatsd/conffiles
+/etc/config/gostatsd
 /etc/gostatsd/gostatsd.toml
-/etc/gostatsd/
 endef
 
 $(eval $(call GoBinPackage,gostatsd))

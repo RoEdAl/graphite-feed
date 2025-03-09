@@ -42,3 +42,13 @@ Signature check passed.
 ```sh
 opkg install go-carbon carbonapi carbon-c-relay-tiny
 ```
+
+> [!IMPORTANT]
+> By default all services are **disabled**.
+> To enable specific service change `enable` flag to `1` in relevant configuration file from `/etc/config` directory.
+>
+> ```sh
+> uci set go-carbon.main.enable=1
+> uci commit
+> service go-carbon restart
+> ```

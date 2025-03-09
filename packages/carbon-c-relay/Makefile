@@ -84,8 +84,8 @@ else # tiny
 endif
 
 define Package/carbon-c-relay/default/conffiles
+/etc/config/carbon-c-relay
 /etc/carbon-c-relay/carbon-c-relay.conf
-/etc/carbon-c-relay/
 endef
 
 define Package/carbon-c-relay/default/install
@@ -96,6 +96,8 @@ define Package/carbon-c-relay/default/install
 	$(INSTALL_DATA) files/carbon-c-relay.conf $(1)/etc/carbon-c-relay/carbon-c-relay.conf
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) files/carbon-c-relay.init $(1)/etc/init.d/carbon-c-relay
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) files/carbon-c-relay.config $(1)/etc/config/carbon-c-relay
 endef
 
 Package/carbon-c-relay-full/install = $(Package/carbon-c-relay/default/install)
