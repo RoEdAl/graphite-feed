@@ -29,7 +29,12 @@ wget -qO - https://roedal.github.io/graphite-feed/graphite-feed.sh | sh
 ### Update package list
 
 ```sh
-opkg update
+$ opkg update
+Downloading https://roedal.github.io/graphite-feed/aarch64_generic/graphite/Packages.gz
+Updated list of available packages in /var/opkg-lists/graphite
+Downloading https://roedal.github.io/graphite-feed/aarch64_generic/graphite/Packages.sig
+Signature check passed.
+⋯
 ```
 
 ### Install required package(s)
