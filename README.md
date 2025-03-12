@@ -17,6 +17,10 @@
 
 * [grafana/carbon-relay-ng](https://github.com/grafana/carbon-relay-ng)
 * [atlassian/gostatsd](https://github.com/atlassian/gostatsd)
+* `collectd-statsd`
+
+  *StatsD* server created from *CollectD* with *StatD* plugin.
+  For simple scenarios this approach may be more efficient than heavy `gostatsd` daemon.
 
 ## Installation
 

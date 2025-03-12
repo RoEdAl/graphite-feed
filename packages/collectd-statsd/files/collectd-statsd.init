@@ -1,0 +1,188 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=10
+
+USE_PROCD=1
+NAME=collectd-statsd
+PROG=/usr/sbin/collectd
+
+BASE_DIR=
+SERVICE_ENABLE=0
+
+echoerr() {
+  echo "$@" | logger -st collectd-statsd -p daemon.info
+}
+
+option_bool() {
+  if [ "${2:-0}" -eq 0 ]; then
+    echo $1 false
+  else
+    echo $1 true
+  fi
+}
+
+option_str() {
+  echo $1 $2
+}
+
+option_qstr() {
+  echo $1 "\"$2\""
+}
+
+base_dir() {
+  BASE_DIR=$BaseDir
+  SERVICE_ENABLE=${enable:-0}
+  [ "$SERVICE_ENABLE" -eq 0 ] && return 0
+
+  if [ "$CreateBaseDir" -ne 0 ]; then
+    mkdir -p $BASE_DIR
+  fi
+
+  if [ "$ChownBaseDir" -ne 0 ]; then
+    chown -R statsd:statsd $BASE_DIR
+  fi
+}
+
+config_preamble() {
+  cat <<EOF
+FQDNLookup false
+$(option_str Interval $Interval)
+ReadThreads 1
+WriteThreads 1
+$(option_qstr BaseDir "$BaseDir")
+
+LoadPlugin "logfile"
+LoadPlugin "statsd"
+LoadPlugin "write_graphite"
+
+<Plugin logfile>
+  LogLevel info
+  File stdout
+  Timestamp false
+  PrintSeverity false
+</Plugin>
+
+EOF
+}
+
+validate_section_service() {
+  uci_load_validate "${NAME}" service service $1 \
+    'enable:bool:0' \
+    'Interval:range(1,3600):15' \
+    'BaseDir:string:/run/collectd-statsd' \
+    'CreateBaseDir:bool:1' \
+    'ChownBaseDir:bool:1'
+}
+
+plugin_statsd() {
+  cat <<EOF
+<Plugin "statsd">
+  $([ -n "$Host" ] && option_qstr Host $Host)
+  $(option_str Port $Port)
+  $(option_bool DeleteCounters $DeleteCounters)
+  $(option_bool DeleteTimers $DeleteTimers)
+  $(option_bool DeleteGauges $DeleteGauges)
+  $(option_bool DeleteSets $DeleteSets)
+  $(option_bool CounterSum $CounterSum)
+  $(option_bool TimerLower $TimerLower)
+  $(option_bool TimerUpper $TimerUpper)
+  $(option_bool TimerSum $TimerSum)
+  $(option_bool TimerCount $TimerCount)
+</Plugin>
+
+EOF
+}
+
+validate_section_statsd() {
+  uci_load_validate "${NAME}" plugin statsd plugin_statsd \
+    'Host:host' \
+    'Port:port:8125' \
+    'DeleteCounters:bool:1' \
+    'DeleteTimers:bool:1' \
+    'DeleteGauges:bool:1' \
+    'DeleteSets:bool:1' \
+    'CounterSum:bool:1' \
+    'TimerLower:bool:0' \
+    'TimerUpper:bool:0' \
+    'TimerSum:bool:0' \
+    'TimerCount:bool:0'
+}
+
+plugin_graphite() {
+  cat <<EOF
+<Plugin "write_graphite">
+  <Node "main">
+    $([ -n "$Host" ] && option_qstr Host $Host)
+    $(option_str Port $Port)
+    $(option_str Protocol $Protocol)
+    $(option_qstr Prefix "$Prefix")
+    $(option_qstr Postfix "$Postfix")
+    $(option_bool SeparateInstances $SeparateInstances)
+    $(option_bool StoreRates $StoreRates)
+    $(option_bool AlwaysAppendDS $AlwaysAppendDS)
+    $(option_bool PreserveSeparator $PreserveSeparator)
+    $(option_bool DropDuplicateFields $DropDuplicateFields)
+    $(option_bool UseTags $UseTags)
+    $(option_bool ReverseHost $ReverseHost)
+  </Node>
+</Plugin>
+
+EOF
+}
+
+validate_section_graphite() {
+  uci_load_validate "${NAME}" plugin graphite plugin_graphite \
+    'Host:host' \
+    'Port:port:2003' \
+    'Protocol:or("tcp", "udp"):udp' \
+    'Prefix:string' \
+    'Postfix:string' \
+    'SeparateInstances:bool:1' \
+    'StoreRates:bool:0' \
+    'AlwaysAppendDS:bool:0' \
+    'PreserveSeparator:bool:1' \
+    'DropDuplicateFields:bool:0' \
+    'UseTags:bool:0' \
+    'ReverseHost:bool:0'
+}
+
+service_instance() {
+  procd_open_instance
+  procd_set_param command "$PROG" -BfC "$1"
+  procd_set_param respawn
+  procd_set_param stdout 1
+  procd_set_param stderr 1
+  procd_set_param user statsd
+  procd_set_param group statsd
+  procd_set_param no_new_privs 1
+  procd_set_param term_timeout 10
+  procd_close_instance
+}
+
+start_service() {
+  config_load "${NAME}"
+
+  validate_section_service base_dir
+  if [ "$SERVICE_ENABLE" -eq 0 ]; then
+    echoerr Service is disabled
+    return 0
+  fi
+
+  if [ ! -d "$BASE_DIR" ]; then
+    echoerr Base directory not defined
+    return 1
+  fi
+
+  local CONFIG_FILE="$BASE_DIR/collectd-statsd.conf"
+
+  (
+    validate_section_service config_preamble
+    validate_section_statsd
+    validate_section_graphite
+  ) >"$CONFIG_FILE"
+
+  chown root:root "$CONFIG_FILE"
+  chmod 0604 "$CONFIG_FILE"
+  service_instance "$CONFIG_FILE"
+}

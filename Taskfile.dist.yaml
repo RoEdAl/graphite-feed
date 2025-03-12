@@ -89,7 +89,14 @@ tasks:
     cmds:
       - ./scripts/feeds update -a
       - ./scripts/feeds install -a
-      - ./scripts/feeds install go-carbon carbonapi carbon-c-relay-full carbon-c-relay-nossl carbon-c-relay-tiny carbon-relay-ng gostatsd
+      - cmd: >-
+          ./scripts/feeds install
+          go-carbon
+          carbonapi
+          carbon-c-relay-full carbon-c-relay-nossl carbon-c-relay-tiny
+          carbon-relay-ng
+          gostatsd
+          collectd-statsd
 
   feeds-init:
     internal: true
@@ -113,6 +120,7 @@ tasks:
       - make package/carbonapi/compile {{.CLI_ARGS}}
       - make package/carbon-relay-ng/compile {{.CLI_ARGS}}
       - make package/gostatsd/compile {{.CLI_ARGS}}
+      - make package/collectd-statsd/compile {{.CLI_ARGS}}
       - make package/index
 
   package-clean:
@@ -124,6 +132,7 @@ tasks:
       - make package/carbonapi/clean {{.CLI_ARGS}}
       - make package/carbon-relay-ng/clean {{.CLI_ARGS}}
       - make package/gostatsd/clean {{.CLI_ARGS}}
+      - make package/collectd-statsd/clean {{.CLI_ARGS}}
 
   copy-packages:
     desc: Copy packages
