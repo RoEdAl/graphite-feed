@@ -9,9 +9,10 @@ PROG=/usr/sbin/collectd
 
 BASE_DIR=
 SERVICE_ENABLE=0
+CONFIG_VALID=2
 
 echoerr() {
-  echo "$@" | logger -st collectd-statsd -p daemon.info
+  echo "$@" | logger -st "$NAME" -p daemon.info
 }
 
 option_bool() {
@@ -31,6 +32,12 @@ option_qstr() {
 }
 
 base_dir() {
+  if [ "$2" -ne 0 ]; then
+    CONFIG_VALID=0
+    echoerr "[$1]" Configuration validation failed
+    return 1
+  fi
+
   BASE_DIR=$BaseDir
   SERVICE_ENABLE=${enable:-0}
   [ "$SERVICE_ENABLE" -eq 0 ] && return 0
@@ -45,6 +52,12 @@ base_dir() {
 }
 
 config_preamble() {
+  if [ "$2" -ne 0 ]; then
+    CONFIG_VALID=0
+    echoerr "[$1]" Configuration validation failed
+    return 1
+  fi
+
   cat <<EOF
 FQDNLookup false
 $(option_str Interval $Interval)
@@ -57,7 +70,7 @@ LoadPlugin "statsd"
 LoadPlugin "write_graphite"
 
 <Plugin logfile>
-  LogLevel info
+  $(option_str LogLevel $LogLevel)
   File stdout
   Timestamp false
   PrintSeverity false
@@ -72,13 +85,20 @@ validate_section_service() {
     'Interval:range(1,3600):15' \
     'BaseDir:string:/run/collectd-statsd' \
     'CreateBaseDir:bool:1' \
-    'ChownBaseDir:bool:1'
+    'ChownBaseDir:bool:1' \
+    'LogLevel:or("info","notice","warning","err"):err'
 }
 
 plugin_statsd() {
+  if [ "$2" -ne 0 ]; then
+    CONFIG_VALID=0
+    echoerr "[$1]" Configuration validation failed
+    return 1
+  fi
+
   cat <<EOF
 <Plugin "statsd">
-  $([ -n "$Host" ] && option_qstr Host $Host)
+  $(option_qstr Host $Host)
   $(option_str Port $Port)
   $(option_bool DeleteCounters $DeleteCounters)
   $(option_bool DeleteTimers $DeleteTimers)
@@ -96,7 +116,7 @@ EOF
 
 validate_section_statsd() {
   uci_load_validate "${NAME}" plugin statsd plugin_statsd \
-    'Host:host' \
+    'Host:host:localhost' \
     'Port:port:8125' \
     'DeleteCounters:bool:1' \
     'DeleteTimers:bool:1' \
@@ -110,10 +130,16 @@ validate_section_statsd() {
 }
 
 plugin_graphite() {
+  if [ "$2" -ne 0 ]; then
+    CONFIG_VALID=0
+    echoerr "[$1]" Configuration validation failed
+    return 1
+  fi
+
   cat <<EOF
 <Plugin "write_graphite">
   <Node "main">
-    $([ -n "$Host" ] && option_qstr Host $Host)
+    $(option_qstr Host $Host)
     $(option_str Port $Port)
     $(option_str Protocol $Protocol)
     $(option_qstr Prefix "$Prefix")
@@ -133,9 +159,9 @@ EOF
 
 validate_section_graphite() {
   uci_load_validate "${NAME}" plugin graphite plugin_graphite \
-    'Host:host' \
+    'Host:host:localhost' \
     'Port:port:2003' \
-    'Protocol:or("tcp", "udp"):udp' \
+    'Protocol:or("tcp","udp"):udp' \
     'Prefix:string' \
     'Postfix:string' \
     'SeparateInstances:bool:1' \
@@ -162,8 +188,13 @@ service_instance() {
 
 start_service() {
   config_load "${NAME}"
+  CONFIG_VALID=1
 
   validate_section_service base_dir
+  if [ "$CONFIG_VALID" -eq 0 ]; then
+    return 1
+  fi
+
   if [ "$SERVICE_ENABLE" -eq 0 ]; then
     echoerr Service is disabled
     return 0
@@ -181,6 +212,10 @@ start_service() {
     validate_section_statsd
     validate_section_graphite
   ) >"$CONFIG_FILE"
+
+  if [ "$CONFIG_VALID" -eq 0 ]; then
+    return 1
+  fi
 
   chown root:root "$CONFIG_FILE"
   chmod 0604 "$CONFIG_FILE"

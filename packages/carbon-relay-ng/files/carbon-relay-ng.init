@@ -8,7 +8,9 @@ NAME=carbon-relay-ng
 PROG=/usr/bin/carbon-relay-ng
 CONFIG_DIR=/etc/carbon-relay-ng
 
-echoerr() { echo "$@" 1>&2; }
+echoerr() {
+  echo "$@" | logger -st "$NAME" -p daemon.info
+}
 
 get_config_path() {
   if [[ "$1" =~ ^/ ]]; then
@@ -28,22 +30,25 @@ validate_section_service() {
 }
 
 service_instance() {
-  [ "$2" = 0 ] || {
-    echoerr "Validation failed"
+  if [ "$2" -ne 0 ]; then
+    echoerr Validation failed
     return 1
-  }
+  fi
 
-  [ "${enable}" = 0 ] && return 1
+  if [ "${enable}" -eq 0 ]; then
+    echoerr "[$1]" Service is disabled
+    return 0
+  fi
 
   local config_path=$(get_config_path "${config_file}")
   if [ -z "${config_path}" ]; then
-    echoerr "Invalid configuration file: ${config_file}"
+    echoerr "[$1]" 'Invalid configuration file:' ${config_file}
     return 1
   fi
 
   if [ ! -d "${spool_dir}" ]; then
     if [ "${create_spool_dir}" = 0 ]; then
-      echoerr "Invalid directory: ${spool_dir}"
+      echoerr "[$1]" 'Invalid directory:' ${spool_dir}
       return 1
     else
       mkdir -p "${spool_dir}" || return 1
@@ -54,7 +59,7 @@ service_instance() {
     chown -R carbon-relay:carbon-relay "${spool_dir}" || return 1
   fi
 
-  procd_open_instance "${NAME}-${1}"
+  procd_open_instance "$1"
   procd_set_param command "$PROG" "${config_path}"
   procd_set_param respawn
   procd_set_param stdout 1
@@ -63,7 +68,7 @@ service_instance() {
   procd_set_param group carbon-relay
   procd_set_param no_new_privs 1
   procd_set_param term_timeout 15
-  procd_add_jail "${NAME}-${1}" ronly requirejail log
+  procd_add_jail "$1" ronly requirejail log
   procd_add_jail_mount /etc/hosts
   procd_add_jail_mount /etc/TZ
   [ -s /etc/ssl/certs/ca-certificates.crt ] && procd_add_jail_mount /etc/ssl/certs/ca-certificates.crt
