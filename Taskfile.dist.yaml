@@ -182,14 +182,13 @@ tasks:
         <ul>
       HTML_DIR_UP: >-
         {{if ne .SDIR  "."}}
-        <li class="updir"><a href=\"../index.html\">··</a></li>
+        <li class="updir"><a href="..">··</a></li>
         {{end}}
       HTML_LIST:
         sh: |
           ls -1 --group-directories-first "{{.SDIR}}" --ignore=index.html --ignore=tmp | while read file; do
               ehref="$file"
               if [ -d "{{.SDIR}}/${file}" ]; then
-                ehref=${file}/index.html
                 if [ -d "{{.SDIR}}/${file}/graphite" ]; then
                   eclass=feed
                 else
@@ -214,7 +213,7 @@ tasks:
       - cmd: |
           cat << EOF > "{{.INDEX_HTML}}"
           {{.HTML_HEADER}}
-          {{.HTML_DIR_UP}}
+          {{trim .HTML_DIR_UP}}
           {{.HTML_LIST}}
           {{.HTML_FOOTER}}
           EOF
