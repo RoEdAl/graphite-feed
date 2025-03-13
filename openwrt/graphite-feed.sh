@@ -3,7 +3,9 @@
 readonly FEEDS_URL=https://roedal.github.io/graphite-feed
 readonly FINGERPRINT=481fd63dd3054e01
 
-echoerr() { echo "$@" 1>&2; }
+echoerr() {
+  echo "$@" | logger -st graphite-feed
+}
 
 get_distrib_arch() {
   . /etc/openwrt_release
@@ -28,7 +30,7 @@ echoerr Architecture: $ARCH
 
 readonly FEED_URL="$FEEDS_URL/$ARCH/graphite"
 if ! test_feed "$FEED_URL"; then
-  echoerr Invalid feed URL: $FEED_URL
+  echoerr Error - invalid feed URL: $FEED_URL
   exit 1
 fi
 
@@ -43,7 +45,7 @@ fi
 
 readonly SIGNING_KEY="/etc/opkg/keys/$FINGERPRINT"
 if [ ! -s "$SIGNING_KEY" ]; then
-  echoerr Installing signing key
+  echoerr Installing signing key: $FINGERPRINT
   if ! wget -qO $SIGNING_KEY "$FEEDS_URL/signing-key/$FINGERPRINT"; then
     exit 1
   fi
