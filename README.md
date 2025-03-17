@@ -22,6 +22,12 @@
   *StatsD* server created from *CollectD* with *StatD* plugin.
   For simple scenarios this approach may be more efficient than heavy `gostatsd` daemon.
 
+* [grafana/grafana](https://github.com/grafana/grafana)
+
+  [Grafana](https://grafana.com) packages are created from the official [Standalone Linux Binaries](https://grafana.com/grafana/download?edition=oss&platform=linux).
+  
+  Supported architectures: `x86_64`, `aarch64`, `armv7` and `armv6`.
+
 ## Installation
 
 ### Download and run [installation script](https://github.com/RoEdAl/graphite-feed/blob/main/openwrt/graphite-feed.sh)

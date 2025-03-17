@@ -7,6 +7,25 @@ version: '3'
 env:
   LC_COLLATE: en_US.utf8
 
+vars:
+  PKGS: >-
+    carbon-c-relay
+    go-carbon
+    carbonapi
+    carbon-relay-ng
+    gostatsd
+    collectd-statsd
+    {{if .PKG_GRAFANA|default 0|int|ne 0}}grafana{{end}}
+
+  PKGS_EXT: >-
+    carbon-c-relay-full carbon-c-relay-nossl carbon-c-relay-tiny
+    go-carbon
+    carbonapi
+    carbon-relay-ng
+    gostatsd
+    collectd-statsd
+    {{if .PKG_GRAFANA|default 0|int|ne 0}}grafana{{end}}
+
 tasks:
   signing-key-create:
     desc: Prepare signing keys
@@ -89,14 +108,7 @@ tasks:
     cmds:
       - ./scripts/feeds update -a
       - ./scripts/feeds install -a
-      - cmd: >-
-          ./scripts/feeds install
-          go-carbon
-          carbonapi
-          carbon-c-relay-full carbon-c-relay-nossl carbon-c-relay-tiny
-          carbon-relay-ng
-          gostatsd
-          collectd-statsd
+      - ./scripts/feeds install {{.PKGS_EXT}}
 
   feeds-init:
     internal: true
@@ -112,30 +124,27 @@ tasks:
       - make defconfig
 
   package-compile:
-    desc: Compile package
+    desc: Compile packages
     dir: openwrt-sdk
     cmds:
-      - make package/carbon-c-relay/compile {{.CLI_ARGS}}
-      - make package/go-carbon/compile {{.CLI_ARGS}}
-      - make package/carbonapi/compile {{.CLI_ARGS}}
-      - make package/carbon-relay-ng/compile {{.CLI_ARGS}}
-      - make package/gostatsd/compile {{.CLI_ARGS}}
-      - make package/collectd-statsd/compile {{.CLI_ARGS}}
-      - make package/index
+      - for: { var: PKGS }
+        cmd: make package/{{.ITEM}}/compile {{.CLI_ARGS}}
 
   package-clean:
-    desc: Clean-up package
+    desc: Clean-up packages
     dir: openwrt-sdk
     cmds:
-      - make package/carbon-c-relay/clean {{.CLI_ARGS}}
-      - make package/go-carbon/clean {{.CLI_ARGS}}
-      - make package/carbonapi/clean {{.CLI_ARGS}}
-      - make package/carbon-relay-ng/clean {{.CLI_ARGS}}
-      - make package/gostatsd/clean {{.CLI_ARGS}}
-      - make package/collectd-statsd/clean {{.CLI_ARGS}}
+      - for: { var: PKGS }
+        cmd: make package/{{.ITEM}}/clean {{.CLI_ARGS}}
 
-  copy-packages:
-    desc: Copy packages
+  package-index:
+    desc: Index packages
+    dir: openwrt-sdk
+    cmds:
+      - make package/index
+
+  package-copy-to-feeds:
+    desc: Copy packages to feeds
     cmds:
       - cmd: mkdir -p feeds
       - cmd: |
@@ -258,4 +267,5 @@ tasks:
       - task: sdk-configure
       - task: package-clean
       - task: package-compile
+      - task: package-index
 

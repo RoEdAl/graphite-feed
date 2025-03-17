@@ -1,0 +1,154 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=10
+
+USE_PROCD=1
+NAME=grafana
+
+GRAFANA_HOME=/usr/share/grafana
+# fixed log directory, not used by default
+LOG_DIR=/var/log/grafana
+CONF_DIR=/etc/grafana
+PROVISIONING_CFG_DIR=/etc/grafana/provisioning
+MAX_OPEN_FILES=10000
+
+echoerr() {
+  echo "$@" | logger -st "$NAME" -p daemon.info
+}
+
+get_config_path() {
+  if [[ "$1" =~ ^/ ]]; then
+    echo $1
+  else
+    readlink -f "${CONF_DIR}/$1"
+  fi
+}
+
+grafana_dir() {
+  if ! mkdir -p "$1"; then
+    echoerr Unable to create directory $1
+    return 1
+  fi
+  if ! chown -R grafana:grafana "$1"; then
+    echoerr Unable to chown $1 directory
+    return 1
+  fi
+  if ! chmod 750 "$1"; then
+    echoerr Unable to chmod $1 directory
+    return 1
+  fi
+  return 0
+}
+
+validate_section_service() {
+  uci_load_validate "${NAME}" service "$1" "$2" \
+    'enable:bool:0' \
+    'config_file:string:grafana.ini' \
+    'data_dir:string:/opt/grafana/data' \
+    'plugins_dir:string:/opt/grafana/plugins'
+}
+
+service_instance() {
+
+  if [ "$2" -ne 0 ]; then
+    echoerr Validation failed
+    return 1
+  fi
+
+  if [ "${enable}" -eq 0 ]; then
+    echoerr "[$1]" Service is disabled
+    return 0
+  fi
+
+  local config_path=$(get_config_path "${config_file}")
+  if [ -z "${config_path}" ]; then
+    echoerr "[$1]" 'Invalid configuration file:' ${config_file}
+    return 1
+  fi
+
+  if [ -z "${data_dir}" ]; then
+    echoerr "[$1]" Data directory not specified
+    return 1
+  fi
+
+  if [ -z "${plugins_dir}" ]; then
+    echoerr "[$1]" Plugins directory not specified
+    return 1
+  fi
+
+  if ! grafana_dir ${LOG_DIR}; then
+    return 1
+  fi
+
+  if ! grafana_dir ${data_dir}; then
+    return 1
+  fi
+
+  if ! grafana_dir ${plugins_dir}; then
+    return 1
+  fi
+
+  if [ ! -d $PROVISIONING_CFG_DIR ]; then
+    mkdir -p $PROVISIONING_CFG_DIR/dashboards $PROVISIONING_CFG_DIR/datasources
+    cp "${GRAFANA_HOME}/conf/provisioning/dashboards/sample.yaml" $PROVISIONING_CFG_DIR/dashboards/sample.yaml
+    cp "${GRAFANA_HOME}/conf/provisioning/datasources/sample.yaml" $PROVISIONING_CFG_DIR/datasources/sample.yaml
+  fi
+
+  if [ ! -d $PROVISIONING_CFG_DIR/plugins ]; then
+    mkdir -p $PROVISIONING_CFG_DIR/plugins
+    cp "${GRAFANA_HOME}/conf/provisioning/plugins/sample.yaml" $PROVISIONING_CFG_DIR/plugins/sample.yaml
+  fi
+
+  if [ ! -d $PROVISIONING_CFG_DIR/access-control ]; then
+    mkdir -p $PROVISIONING_CFG_DIR/access-control
+    cp "${GRAFANA_HOME}/conf/provisioning/access-control/sample.yaml" $PROVISIONING_CFG_DIR/access-control/sample.yaml
+  fi
+
+  if [ ! -d $PROVISIONING_CFG_DIR/alerting ]; then
+    mkdir -p $PROVISIONING_CFG_DIR/alerting
+    cp "${GRAFANA_HOME}/conf/provisioning/alerting/sample.yaml" $PROVISIONING_CFG_DIR/alerting/sample.yaml
+  fi
+
+  procd_open_instance
+  procd_set_param command ${GRAFANA_HOME}/bin/grafana server \
+    --homepath=${GRAFANA_HOME} \
+    --config=${config_path} \
+    --packaging=deb \
+    cfg:default.paths.logs=${LOG_DIR} \
+    cfg:default.paths.data=${data_dir} \
+    cfg:default.paths.plugins=${plugins_dir} \
+    cfg:default.paths.provisioning=${PROVISIONING_CFG_DIR}
+  procd_set_param respawn
+  procd_set_param stdout 1
+  procd_set_param stderr 1
+  procd_set_param user grafana
+  procd_set_param group grafana
+  procd_set_param no_new_privs 1
+  procd_set_param term_timeout 45
+  procd_set_param limits nofile="$MAX_OPEN_FILES $((2 * $MAX_OPEN_FILES))"
+  procd_add_jail ${NAME} ronly requirejail log
+  procd_add_jail_mount "${GRAFANA_HOME}"
+  procd_add_jail_mount "${CONF_DIR}"
+  procd_add_jail_mount "${PROVISIONING_CFG_DIR}"
+  procd_add_jail_mount_rw "${LOG_DIR}"
+  procd_add_jail_mount_rw "${data_dir}"
+  procd_add_jail_mount_rw "${plugins_dir}"
+  [ -s /etc/ssl/certs/ca-certificates.crt ] && procd_add_jail_mount /etc/ssl/certs/ca-certificates.crt
+  procd_add_jail_mount /proc
+  procd_add_jail_mount_rw /tmp
+  procd_close_instance
+}
+
+start_service() {
+  config_load "${NAME}"
+  config_foreach validate_section_service service service_instance
+}
+
+service_triggers() {
+  procd_add_reload_trigger "${NAME}"
+
+  procd_open_validate
+  validate_section_service
+  procd_close_validate
+}
