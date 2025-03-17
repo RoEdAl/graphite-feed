@@ -30,42 +30,55 @@ jobs:
           - target: x86_64
             sdk-path: x86/64
             sdk-name: x86-64_gcc-13.3.0_musl
+            pkg-grafana: true
           - target: aarch64_generic
             sdk-path: rockchip/armv8
             sdk-name: rockchip-armv8_gcc-13.3.0_musl
+            pkg-grafana: true
           - target: aarch64_cortex-a53
             sdk-path: sunxi/cortexa53
             sdk-name: sunxi-cortexa53_gcc-13.3.0_musl
+            pkg-grafana: true
           - target: aarch64_cortex-a72
             sdk-path: bcm27xx/bcm2711
             sdk-name: bcm27xx-bcm2711_gcc-13.3.0_musl
+            pkg-grafana: true
           - target: aarch64_cortex-a76
             sdk-path: bcm27xx/bcm2712
-            sdk-name: bcm27xx-bcm2712_gcc-13.3.0_musl            
+            sdk-name: bcm27xx-bcm2712_gcc-13.3.0_musl
+            pkg-grafana: true
           - target: arm_cortex-a7
             sdk-path: mediatek/mt7629
             sdk-name: mediatek-mt7629_gcc-13.3.0_musl_eabi
+            pkg-grafana: true
           - target: arm_cortex-a7_neon-vfpv4
             sdk-path: sunxi/cortexa7
             sdk-name: sunxi-cortexa7_gcc-13.3.0_musl_eabi
+            pkg-grafana: true
           - target: arm_cortex-a8_vfpv3
             sdk-path: sunxi/cortexa8
             sdk-name: sunxi-cortexa8_gcc-13.3.0_musl_eabi
+            pkg-grafana: true
           - target: arm_cortex-a9
             sdk-path: bcm53xx/generic
             sdk-name: bcm53xx-generic_gcc-13.3.0_musl_eabi
+            pkg-grafana: true
           - target: arm_cortex-a9_neon
             sdk-path: imx/cortexa9
             sdk-name: imx-cortexa9_gcc-13.3.0_musl_eabi
+            pkg-grafana: true
           - target: arm_cortex-a9_vfpv3-d16
             sdk-path: mvebu/cortexa9
             sdk-name: mvebu-cortexa9_gcc-13.3.0_musl_eabi
+            pkg-grafana: true
           - target: arm_cortex-a15_neon-vfpv4
             sdk-path: ipq806x/generic
             sdk-name: ipq806x-generic_gcc-13.3.0_musl_eabi
+            pkg-grafana: true
           - target: arm_arm1176jzf-s_vfp
             sdk-path: bcm27xx/bcm2708
             sdk-name: bcm27xx-bcm2708_gcc-13.3.0_musl_eabi
+            pkg-grafana: true
           - target: mipsel_mips32
             sdk-path: bcm47xx/generic
             sdk-name: bcm47xx-generic_gcc-13.3.0_musl
@@ -127,9 +140,11 @@ jobs:
 
       - name: Build packages
         run: task build
+        env:
+          PKG_GRAFANA: '${{ matrix.target.pkg-grafana && 1 || 0 }}'
 
       - name: Copy packages
-        run: task copy-packages
+        run: task package-copy-to-feeds
 
       - name: Upload feed
         uses: actions/upload-artifact@v4
