@@ -36,7 +36,8 @@ tasks:
       - test -s signing-key/key-build
       - test -s signing-key/key-build.pub
     preconditions:
-      - test -x openwrt-sdk/staging_dir/host/bin/usign
+      - sh: test -x openwrt-sdk/staging_dir/host/bin/usign
+        msg: usign utility not found
     cmds:
       - cmd: mkdir -p signing-key
       - cmd: |
@@ -54,8 +55,10 @@ tasks:
     deps:
       - signing-key-create
     preconditions:
-      - test -x openwrt-sdk/staging_dir/host/bin/usign
-      - test -s signing-key/key-build.pub      
+      - sh: test -x openwrt-sdk/staging_dir/host/bin/usign
+        msg: usign utility not found
+      - sh: test -s signing-key/key-build.pub
+        msg: Signing key not found
     vars:
       FINGERPRINT:
         sh: openwrt-sdk/staging_dir/host/bin/usign -F -p signing-key/key-build.pub
@@ -69,7 +72,8 @@ tasks:
       - test -s openwrt-sdk/key-build
       - test -s openwrt-sdk/key-build.pub
     preconditions:
-      - test -d openwrt-sdk
+      - sh: test -d openwrt-sdk
+        msg: OpenWRT SDK not installed
     deps:
       - signing-key-create
     cmds:
@@ -88,9 +92,12 @@ tasks:
   signing-key-publish:
     desc: Publish signing key
     preconditions:
-      - test -s signing-key/key-build.pub
-      - test -s signing-key/fingerprint
-      - test -d feeds
+      - sh: test -s signing-key/key-build.pub
+        msg: Signing key not found
+      - sh: test -s signing-key/fingerprint
+        msg: Fingerprint of signing key not found
+      - sh: test -d feeds
+        msg: Fedds directory does not exitst
     vars:
       FINGERPRINT:
         sh: cat signing-key/fingerprint
@@ -101,6 +108,8 @@ tasks:
   feeds-configure:
     desc: Configure feeds
     dir: openwrt-sdk
+    status:
+      - test -s feeds.conf
     cmds:
       - cp feeds.conf.default feeds.conf
       - echo 'src-link graphite {{joinPath .ROOT_DIR "packages"}}' >> feeds.conf
@@ -123,8 +132,10 @@ tasks:
   sdk-configure:
     desc: Configure OpenWRT SDK
     dir: openwrt-sdk
+    status:
+      - test -s .config
     cmds:
-      - cp {{joinPath .ROOT_DIR "openwrt" "diffconfig" }} .config
+      - cp {{joinPath .ROOT_DIR "openwrt" "diffconfig" | relPath .TASK_DIR | shellQuote}} .config
       - make defconfig
 
   package-compile:
