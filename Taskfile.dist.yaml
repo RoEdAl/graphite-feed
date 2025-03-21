@@ -101,6 +101,8 @@ tasks:
   feeds-configure:
     desc: Configure feeds
     dir: openwrt-sdk
+    status:
+      - test -s feeds.conf
     cmds:
       - cp feeds.conf.default feeds.conf
       - echo 'src-link graphite {{joinPath .ROOT_DIR "packages"}}' >> feeds.conf
@@ -123,8 +125,10 @@ tasks:
   sdk-configure:
     desc: Configure OpenWRT SDK
     dir: openwrt-sdk
+    status:
+      - test -s .config
     cmds:
-      - cp {{joinPath .ROOT_DIR "openwrt" "diffconfig" }} .config
+      - cp {{joinPath .ROOT_DIR "openwrt" "diffconfig" | relPath .TASK_DIR | shellQuote}} .config
       - make defconfig
 
   package-compile:
