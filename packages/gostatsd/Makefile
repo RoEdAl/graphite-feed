@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gostatsd
-PKG_VERSION:=40.0.0
+PKG_VERSION:=40.0.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/atlassian/gostatsd/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=505bbcbd7961c037b2fb11b54282f8b3232b48e0d739980b3279f2510167ad50
+PKG_HASH:=6564bffb4f9b491ad4345e4a7391ee4cbcc2c160dea09086e598680cd311a399
 
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
 PKG_LICENSE:=MIT
