@@ -1,0 +1,59 @@
+diff --git a/lang/golang/golang-values.mk b/lang/golang/golang-values.mk
+index d57de5f32..098b9184e 100644
+--- a/lang/golang/golang-values.mk
++++ b/lang/golang/golang-values.mk
+@@ -167,17 +167,22 @@ else ifeq ($(GO_ARCH),amd64)
+   GO_AMD64:=v1
+ 
+ else ifeq ($(GO_ARCH),arm)
+-  GO_TARGET_FPU:=$(word 2,$(subst +,$(space),$(call qstrip,$(CONFIG_CPU_TYPE))))
+-
+-  # FPU names from https://gcc.gnu.org/onlinedocs/gcc-8.4.0/gcc/ARM-Options.html#index-mfpu-1
+-  # see also https://github.com/gcc-mirror/gcc/blob/releases/gcc-8.4.0/gcc/config/arm/arm-cpus.in
+-
+-  ifeq ($(GO_TARGET_FPU),)
+-    GO_ARM:=5
+-  else ifneq ($(filter $(GO_TARGET_FPU),vfp vfpv2),)
+-    GO_ARM:=6
+-  else
++  GO_TARGET_CORE:=$(word 1,$(subst +,$(space),$(call qstrip,$(CONFIG_CPU_TYPE))))
++  ifneq ($(filter $(ARM_TARGET_CORE),cortex-a7 cortex-a8 cortex-a9 cortex-a15),)
+     GO_ARM:=7
++  else
++    GO_TARGET_FPU:=$(word 2,$(subst +,$(space),$(call qstrip,$(CONFIG_CPU_TYPE))))
++
++    # FPU names from https://gcc.gnu.org/onlinedocs/gcc-8.4.0/gcc/ARM-Options.html#index-mfpu-1
++    # see also https://github.com/gcc-mirror/gcc/blob/releases/gcc-8.4.0/gcc/config/arm/arm-cpus.in
++
++    ifeq ($(GO_TARGET_FPU),)
++      GO_ARM:=5
++    else ifneq ($(filter $(GO_TARGET_FPU),vfp vfpv2),)
++      GO_ARM:=6
++    else
++      GO_ARM:=7
++    endif
+   endif
+ 
+ else ifneq ($(filter $(GO_ARCH),mips mipsle),)
+diff --git a/lang/golang/golang/Makefile b/lang/golang/golang/Makefile
+index 4ff73021d..5e3dc8d37 100644
+--- a/lang/golang/golang/Makefile
++++ b/lang/golang/golang/Makefile
+@@ -8,7 +8,7 @@
+ include $(TOPDIR)/rules.mk
+ 
+ GO_VERSION_MAJOR_MINOR:=1.23
+-GO_VERSION_PATCH:=4
++GO_VERSION_PATCH:=7
+ 
+ PKG_NAME:=golang
+ PKG_VERSION:=$(GO_VERSION_MAJOR_MINOR)$(if $(GO_VERSION_PATCH),.$(GO_VERSION_PATCH))
+@@ -20,7 +20,7 @@ GO_SOURCE_URLS:=https://dl.google.com/go/ \
+ 
+ PKG_SOURCE:=go$(PKG_VERSION).src.tar.gz
+ PKG_SOURCE_URL:=$(GO_SOURCE_URLS)
+-PKG_HASH:=ad345ac421e90814293a9699cca19dd5238251c3f687980bbcae28495b263531
++PKG_HASH:=7cfabd46b73eb4c26b19d69515dd043d7183a6559acccd5cfdb25eb6b266a458
+ 
+ PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
+ PKG_LICENSE:=BSD-3-Clause

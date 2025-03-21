@@ -4,6 +4,9 @@
 
 version: '3'
 
+includes:
+  dev: task/dev
+
 env:
   LC_COLLATE: en_US.utf8
 
@@ -107,6 +110,7 @@ tasks:
     dir: openwrt-sdk
     cmds:
       - ./scripts/feeds update -a
+      - task: 'dev:packages-apply-patch'
       - ./scripts/feeds install -a
       - ./scripts/feeds install {{.PKGS_EXT}}
 
