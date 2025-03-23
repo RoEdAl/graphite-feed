@@ -18,6 +18,7 @@ vars:
     carbon-relay-ng
     gostatsd
     collectd-statsd
+    go-task
     {{if .PKG_GRAFANA|default 0|int|ne 0}}grafana{{end}}
 
   PKGS_EXT: >-
@@ -27,6 +28,7 @@ vars:
     carbon-relay-ng
     gostatsd
     collectd-statsd
+    go-task
     {{if .PKG_GRAFANA|default 0|int|ne 0}}grafana{{end}}
 
 tasks:

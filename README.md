@@ -28,6 +28,10 @@
   
   Supported architectures: `x86_64`, `aarch64`, `armv7` and `armv6`.
 
+* [go-task/task](https://github.com/go-task/task)
+
+  A [task runner](https://taskfile.dev/). Simpler *Make* alternative written in *Go*.
+
 ## Installation
 
 ### Download and run [installation script](https://github.com/RoEdAl/graphite-feed/blob/main/openwrt/graphite-feed.sh)
