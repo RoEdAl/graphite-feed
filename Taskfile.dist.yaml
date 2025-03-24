@@ -201,10 +201,11 @@ tasks:
             li.folder { font-weight: bold }
             li.ipk    { list-style-type: disclosure-closed; font-size: larger }
             li.script { list-style-type: square; font-size: larger; font-family: monospace; }
+            footer { text-align: center }
           </style>
         </head>
         <body>
-        <h2>Directory Listing: <em>{{.DOC_DIR}}</em></h2>
+        <h1>Directory Listing: <em>{{.DOC_DIR}}</em></h1>
         <ul>
       HTML_DIR_UP: >-
         {{if ne .SDIR  "."}}
@@ -231,8 +232,7 @@ tasks:
           done
       HTML_FOOTER: >-
         </ul>
-        <hr/>
-        <p>Generated on <code>{{.TIMESTAMP}}</code>.</p></body></html>
+        <footer>Generated on <code>{{.TIMESTAMP}}</code>.</footer></body></html>
 
     cmds:
       - cmd: "echo 'Creating index: {{.INDEX_HTML}}'"
