@@ -160,17 +160,31 @@ tasks:
     cmds:
       - make package/index
 
+  copy-pkgs-*:
+    internal: true
+    label: copy-pkgs-{{index .MATCH 0 | dir | base}}
+    vars:
+      ARCH: '{{index .MATCH 0 | dir | base}}'
+      PKG_DIR: '{{index .MATCH 0 | joinPath "openwrt-sdk" "bin" "packages"}}'
+      DST_DIR: '{{joinPath "feeds" .ARCH}}'
+    cmds:
+      - mkdir -p {{.DST_DIR}}
+      - cp -a {{.PKG_DIR}} {{.DST_DIR}}
+      - touch -cr {{dir .PKG_DIR}} {{.DST_DIR}}
+
   package-copy-to-feeds:
     desc: Copy packages to feeds
+    vars:
+      PKG_DIRS:
+        sh: |
+          for p in openwrt-sdk/bin/packages/*/graphite; do
+            echo ${p#openwrt-sdk/bin/packages/}
+          done
     cmds:
       - cmd: mkdir -p feeds
-      - cmd: |
-          for p in openwrt-sdk/bin/packages/*/graphite; do
-            s=${p%/graphite}
-            s=${s#openwrt-sdk/bin/packages/}
-            mkdir -p feeds/$s
-            cp -r $p feeds/$s
-          done
+      - for:
+          var: PKG_DIRS
+        task:  copy-pkgs-{{.ITEM}}
 
   create-index:
     desc: Create index.html
