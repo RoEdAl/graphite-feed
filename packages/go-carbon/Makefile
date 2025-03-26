@@ -4,10 +4,6 @@ PKG_NAME:=go-carbon
 PKG_VERSION:=0.18.0
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/go-graphite/go-carbon/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=6af0223282dbbf04880d1b82a5605be99db5a0475599748fa5598f3e0eab856e
-
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE.md
@@ -17,7 +13,6 @@ PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
 GO_PKG:=github.com/go-graphite/go-carbon
-GO_PKG_BUILD_PKG:=github.com/go-graphite/go-carbon
 GO_PKG_LDFLAGS_X:=main.BuildVersion=$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
@@ -36,7 +31,21 @@ define Package/go-carbon/description
 Golang implementation of Graphite/Carbon server with classic architecture: Agent -> Cache -> Persister
 endef
 
+define Build/Compile
+	$(GO_GENERAL_BUILD_CONFIG_VARS) \
+	$(GO_PKG_BUILD_CONFIG_VARS) \
+	$(GO_PKG_VARS) \
+	GOWORK=off \
+	go install \
+		$(GO_MOD_ARGS) \
+		$(GO_PKG_INSTALL_ARGS) \
+		$(GO_PKG)@v$(PKG_VERSION)
+endef
+
 define Build/Install
+endef
+
+define Build/InstallDev
 endef
 
 define Package/go-carbon/install
