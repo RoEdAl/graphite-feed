@@ -4,10 +4,6 @@ PKG_NAME:=carbonapi
 PKG_VERSION:=0.17.0
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/go-graphite/carbonapi/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=f99ef3d1f1844cab470e255f31efee20792748b66fc9e4bb4a3bb2e648d623e4
-
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
 PKG_LICENSE:=BSD-2
 PKG_LICENSE_FILES:=LICENSE
@@ -16,8 +12,7 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-GO_PKG:=github.com/go-graphite/carbonapi/cmd/carbonapi
-GO_PKG_BUILD_PKG:=github.com/go-graphite/carbonapi/cmd/carbonapi
+GO_PKG:=github.com/go-graphite/carbonapi
 GO_PKG_LDFLAGS_X:=main.BuildVersion=$(PKG_VERSION)
 # GO_PKG_TAGS=cairo
 
@@ -37,7 +32,21 @@ define Package/carbonapi/description
 Implementation of graphite API (graphite-web) in golang
 endef
 
+define Build/Compile
+	$(GO_GENERAL_BUILD_CONFIG_VARS) \
+	$(GO_PKG_BUILD_CONFIG_VARS) \
+	$(GO_PKG_VARS) \
+	GOWORK=off \
+	go install \
+		$(GO_MOD_ARGS) \
+		$(GO_PKG_INSTALL_ARGS) \
+		$(GO_PKG)/cmd/carbonapi@v$(PKG_VERSION)
+endef
+
 define Build/Install
+endef
+
+define Build/InstallDev
 endef
 
 define Package/carbonapi/install
