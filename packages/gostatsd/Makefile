@@ -1,12 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gostatsd
-PKG_VERSION:=40.0.1
+PKG_VERSION:=40.0.2
 PKG_RELEASE:=1
-
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/atlassian/gostatsd/tar.gz/$(PKG_VERSION)?
-PKG_HASH:=6564bffb4f9b491ad4345e4a7391ee4cbcc2c160dea09086e598680cd311a399
 
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
 PKG_LICENSE:=MIT
@@ -16,12 +12,14 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-GO_PKG:=github.com/atlassian/gostatsd/cmd/gostatsd
-GO_PKG_BUILD_PKG:=github.com/atlassian/gostatsd/cmd/gostatsd
+PKG_HASH:=50e8d329283667f7b50a863982b5c5218807148e
+PKG_UNIX_EPOCH:=1742951016
+
+GO_PKG:=github.com/atlassian/gostatsd
 GO_PKG_LDFLAGS_X:=\
 	main.Version=$(PKG_VERSION) \
 	main.GitCommit=$(PKG_HASH) \
-	main.BuildDate=$(shell date --utc --date=@$(SOURCE_DATE_EPOCH) +%Y-%m-%d-%H:%M)
+	main.BuildDate=$(shell date --utc --date=@$(PKG_UNIX_EPOCH) +%Y-%m-%d-%H:%M)
 
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
@@ -39,7 +37,21 @@ define Package/gostatsd/description
 An implementation of Etsy's statsd in Go, based on original code from https://github.com/kisielk/gostatsd.
 endef
 
+define Build/Compile
+	$(GO_GENERAL_BUILD_CONFIG_VARS) \
+	$(GO_PKG_BUILD_CONFIG_VARS) \
+	$(GO_PKG_VARS) \
+	GOWORK=off \
+	go install \
+		$(GO_MOD_ARGS) \
+		$(GO_PKG_INSTALL_ARGS) \
+		$(GO_PKG)/cmd/gostatsd@$(PKG_VERSION)
+endef
+
 define Build/Install
+endef
+
+define Build/InstallDev
 endef
 
 define Package/gostatsd/install
