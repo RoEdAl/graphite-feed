@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=carbon-relay-ng
 PKG_VERSION:=1.5.2
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/grafana/carbon-relay-ng/tar.gz/v$(PKG_VERSION)?
@@ -16,7 +16,7 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-GO_PKG:=github.com/grafana/carbon-relay-ng/cmd/carbon-relay-ng
+GO_PKG:=github.com/grafana/carbon-relay-ng
 GO_PKG_BUILD_PKG:=github.com/grafana/carbon-relay-ng/cmd/carbon-relay-ng
 GO_PKG_LDFLAGS_X:=main.Version=$(PKG_VERSION)
 
@@ -52,7 +52,6 @@ define Package/carbon-relay-ng/install
 	$(INSTALL_DATA) files/carbon-relay-ng.conf $(1)/etc/carbon-relay-ng/carbon-relay-ng.conf
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) files/carbon-relay-ng.init $(1)/etc/init.d/carbon-relay-ng
-	$(INSTALL_DIR) $(1)/var/spool/carbon-relay-ng
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) files/carbon-relay-ng.config $(1)/etc/config/carbon-relay-ng
 endef
@@ -62,15 +61,6 @@ define Package/carbon-relay-ng/conffiles
 /etc/go-carbon/carbon-relay-ng/carbon-relay-ng.yaml
 /etc/go-carbon/carbon-relay-ng/
 endef
-
-define Package/carbon-relay-ng/postinst
-#!/bin/sh
-if [ -z "$${IPKG_INSTROOT}" ]; then
-  chown -R carbon-relay:carbon-relay /var/spool/carbon-relay-ng
-fi
-exit 0
-endef
-
 
 $(eval $(call GoBinPackage,carbon-relay-ng))
 $(eval $(call BuildPackage,carbon-relay-ng))
