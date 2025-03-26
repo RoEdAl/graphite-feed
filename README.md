@@ -26,11 +26,30 @@
 
   [Grafana](https://grafana.com) packages are created from the official [Standalone Linux Binaries](https://grafana.com/grafana/download?edition=oss&platform=linux).
   
-  Supported architectures: `x86_64`, `aarch64`, `armv7` and `armv6`.
+  Supported architectures:
+
+  * `amd64`
+    * `x86_64`
+  * `aarch64`
+    * `aarch64_generic`
+    * `aarch64_cortex-a53`
+    * `aarch64_cortex-a72`
+    * `aarch64_cortex-a76`
+  * `armv7`
+    * `arm_cortex-a7`
+    * `arm_cortex-a7_neon-vfpv4`
+    * `arm_cortex-a8_vfpv3`
+    * `arm_cortex-a9`
+    * `arm_cortex-a9_neon`
+    * `arm_cortex-a9_vfpv3-d16`
+    * `arm_cortex-a15_neon-vfpv4`
+  * `armv6`
+    * `arm_arm1176jzf-s_vfp`
 
 * [go-task/task](https://github.com/go-task/task)
 
-  A [task runner](https://taskfile.dev/). Simpler *Make* alternative written in *Go*.
+  A [task runner](https://taskfile.dev/). Simpler *Make* alternative written in *Go*. \
+  You may also consider this tool as *Bash* on steroids.
 
 ## Installation
 
