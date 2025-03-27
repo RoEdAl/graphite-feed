@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  GRAFANA_VER: 11.5.2
+  GRAFANA_VER: 11.6.0
 
 permissions:
   contents: read
