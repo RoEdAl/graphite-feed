@@ -20,6 +20,7 @@ vars:
     collectd-statsd
     go-task
     {{if .PKG_GRAFANA|default 0|int|ne 0}}grafana{{end}}
+    {{if .PKG_TELEGRAF|default 0|int|ne 0}}telegraf-bin{{end}}
 
   PKGS_EXT: >-
     carbon-c-relay-full carbon-c-relay-nossl carbon-c-relay-tiny
@@ -30,6 +31,7 @@ vars:
     collectd-statsd
     go-task
     {{if .PKG_GRAFANA|default 0|int|ne 0}}grafana{{end}}
+    {{if .PKG_TELEGRAF|default 0|int|ne 0}}telegraf-bin{{end}}
 
 tasks:
   signing-key-create:

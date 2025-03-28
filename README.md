@@ -24,9 +24,11 @@
 
 * [grafana/grafana](https://github.com/grafana/grafana)
 
-  [Grafana](https://grafana.com) packages are created from the official [Standalone Linux Binaries](https://grafana.com/grafana/download?edition=oss&platform=linux).
+  [Grafana](https://grafana.com) packages are created from the official [Standalone Linux Binaries](https://grafana.com/grafana/download?edition=oss&platform=linux)
+  for a limited number of CPU architectures.
   
-  Supported architectures:
+  <details>
+  <summary>Supported CPU architectures</summary>
 
   * `amd64`
     * `x86_64`
@@ -45,11 +47,45 @@
     * `arm_cortex-a15_neon-vfpv4`
   * `armv6`
     * `arm_arm1176jzf-s_vfp`
+  
+  </details>
 
 * [go-task/task](https://github.com/go-task/task)
 
   A [task runner](https://taskfile.dev/). Simpler *Make* alternative written in *Go*. \
   You may also consider this tool as *Bash* on steroids.
+
+* [influxdata/telegraf](https://github.com/influxdata/telegraf)
+
+  [Telegraf](https://influxdata.com/telegraf) packages are created from the official *Linux Binaries*
+  for a limited number of CPU architectures.
+
+  <details>
+  <summary>Supported CPU architectures</summary>
+
+  * `amd64`
+    * `x86_64`
+  * `arm64`
+    * `aarch64_generic`
+    * `aarch64_cortex-a53`
+    * `aarch64_cortex-a72`
+    * `aarch64_cortex-a76`
+  * `armhf`
+    * `arm_cortex-a7`
+    * `arm_cortex-a7_neon-vfpv4`
+    * `arm_cortex-a8_vfpv3`
+    * `arm_cortex-a9`
+    * `arm_cortex-a9_neon`
+    * `arm_cortex-a9_vfpv3-d16`
+    * `arm_cortex-a15_neon-vfpv4`
+  * `armel`
+    * `arm_arm1176jzf-s_vfp`
+  * `mipsel`
+    * `mipsel_mips32`
+  * `riscv64`
+    * `riscv64_riscv64`
+
+  </details>
 
 ## Installation
 

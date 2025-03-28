@@ -1,0 +1,123 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=10
+
+USE_PROCD=1
+NAME=telegraf
+
+# fixed log directory, not used by default
+LOG_DIR=/var/log/telegraf
+CONF_DIR=/etc/telegraf
+MEMLOCK_LIMIT=8388608
+
+echoerr() {
+  echo "$@" | logger -st "$NAME" -p daemon.info
+}
+
+get_config_path() {
+  if [[ "$1" =~ ^/ ]]; then
+    echo $1
+  else
+    readlink -f "${CONF_DIR}/$1"
+  fi
+}
+
+telegraf_dir() {
+  if ! mkdir -p "$1"; then
+    echoerr Unable to create directory $1
+    return 1
+  fi
+  if ! chown -R telegraf:telegraf "$1"; then
+    echoerr Unable to chown $1 directory
+    return 1
+  fi
+  if ! chmod 750 "$1"; then
+    echoerr Unable to chmod $1 directory
+    return 1
+  fi
+  return 0
+}
+
+validate_section_service() {
+  uci_load_validate "${NAME}" service "$1" "$2" \
+    'enable:bool:0' \
+    'config_file:string:telegraf.conf' \
+    'config_dir:string:telegraf.d'
+}
+
+service_instance() {
+
+  if [ "$2" -ne 0 ]; then
+    echoerr "[$1]" Validation failed
+    return 1
+  fi
+
+  if [ "${enable}" -eq 0 ]; then
+    echoerr "[$1]" Service is disabled
+    return 0
+  fi
+
+  local config_path=$(get_config_path "${config_file}")
+  if [ ! -s "${config_path}" ]; then
+    if [ "$1" = "main" ]; then
+      config_path="${CONF_DIR}/${config_file}"
+      echoerr "[$1]" 'Generating configuration file:' ${config_path}
+      /usr/bin/telegraf --section-filter 'global_tags:secretstores:inputs' config >"${config_path}"
+    else
+      echoerr "[$1]" 'Invalid configuration file:' ${config_file}
+      return 1
+    fi
+  fi
+
+  local config_full_path
+  if [ -z "${config_dir}" ]; then
+    echoerr "[$1]" Configuration directory not specified
+  else
+    config_full_path=$(get_config_path "${config_dir}")
+    if [ ! -d "${config_full_path}" ]; then
+      echoerr "[$1]" 'Invalid configuration directory:' ${config_full_path}
+      return 1
+    fi
+  fi
+
+  if ! telegraf_dir ${LOG_DIR}; then
+    return 1
+  fi
+
+  procd_open_instance
+  procd_set_param command /usr/bin/telegraf --config "${config_path}"
+  if [ -n "${config_full_path}" ]; then
+    procd_append_param command --config-directory "${config_full_path}"
+  fi
+  procd_set_param respawn
+  procd_set_param stdout 1
+  procd_set_param stderr 1
+  procd_set_param user telegraf
+  procd_set_param group telegraf
+  procd_set_param no_new_privs 1
+  procd_set_param term_timeout 15
+  procd_set_param limits memlock="$MEMLOCK_LIMIT $((2 * $MEMLOCK_LIMIT))"
+  procd_add_jail ${NAME} requirejail log procfs sysfs
+  procd_add_jail_mount "${config_path}"
+  if [ -n "${config_full_path}" ]; then
+    procd_add_jail_mount "${config_full_path}"
+  fi
+  procd_add_jail_mount_rw "${LOG_DIR}"
+  procd_add_jail_mount /etc/TZ
+  [ -s /etc/ssl/certs/ca-certificates.crt ] && procd_add_jail_mount /etc/ssl/certs/ca-certificates.crt
+  procd_close_instance
+}
+
+start_service() {
+  config_load "${NAME}"
+  config_foreach validate_section_service service service_instance
+}
+
+service_triggers() {
+  procd_add_reload_trigger "${NAME}"
+
+  procd_open_validate
+  validate_section_service
+  procd_close_validate
+}
