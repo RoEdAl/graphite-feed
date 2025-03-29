@@ -127,7 +127,7 @@ service_instance() {
   procd_set_param no_new_privs 1
   procd_set_param term_timeout 45
   procd_set_param limits nofile="$MAX_OPEN_FILES $((2 * $MAX_OPEN_FILES))"
-  procd_add_jail ${NAME} ronly requirejail log
+  procd_add_jail ${NAME} ronly requirejail log procfs sysfs
   procd_add_jail_mount "${GRAFANA_HOME}"
   procd_add_jail_mount "${CONF_DIR}"
   procd_add_jail_mount "${PROVISIONING_CFG_DIR}"
@@ -135,7 +135,6 @@ service_instance() {
   procd_add_jail_mount_rw "${data_dir}"
   procd_add_jail_mount_rw "${plugins_dir}"
   [ -s /etc/ssl/certs/ca-certificates.crt ] && procd_add_jail_mount /etc/ssl/certs/ca-certificates.crt
-  procd_add_jail_mount /proc
   procd_add_jail_mount_rw /tmp
   procd_close_instance
 }
