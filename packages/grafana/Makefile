@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=grafana
 PKG_VERSION:=11.6.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 undefine GRAFANA_BIN_TARGET
 undefine PKG_HASH
@@ -51,16 +51,19 @@ PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/grafana
+define Package/grafana-bin
 	SECTION:=utils
 	CATEGORY:=Utilities
 	TITLE:=The open-source platform for monitoring and observability [$(GRAFANA_BIN_TARGET)]
 	URL:=https://grafana.com
 	DEPENDS:=@(aarch64||arm||x86_64) +ca-bundle
 	USERID:=grafana:grafana
+	PROVIDES:=$(PKG_NAME)
+	VARIANT:=bin
+	DEFAULT_VARIANT:=1
 endef
 
-define Package/grafana/description
+define Package/grafana-bin/description
 The open and composable observability and data visualization platform [$(GRAFANA_BIN_TARGET)].
 Visualize metrics, logs, and traces from multiple sources like Prometheus, Loki, Elasticsearch, InfluxDB, Postgres and many more.
 endef
@@ -74,7 +77,7 @@ endef
 define Build/Install
 endef
 
-define Package/grafana/install
+define Package/grafana-bin/install
 	$(INSTALL_DIR) $(1)/usr/share/grafana
 
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/LICENSE $(1)/usr/share/grafana
@@ -105,9 +108,9 @@ define Package/grafana/install
 	$(INSTALL_CONF) files/grafana.config $(1)/etc/config/grafana
 endef
 
-define Package/grafana/conffiles
+define Package/grafana-bin/conffiles
 /etc/config/grafana
 /etc/grafana/grafana.ini
 endef
 
-$(eval $(call BuildPackage,grafana))
+$(eval $(call BuildPackage,grafana-bin))
