@@ -24,29 +24,29 @@
 
 * [grafana/grafana](https://github.com/grafana/grafana)
 
+  Package name: `grafana-bin`.
+
   [Grafana](https://grafana.com) packages are created from the official [Standalone Linux Binaries](https://grafana.com/grafana/download?edition=oss&platform=linux)
   for a limited number of CPU architectures.
   
   <details>
   <summary>Supported CPU architectures</summary>
 
-  * `amd64`
-    * `x86_64`
-  * `aarch64`
-    * `aarch64_generic`
-    * `aarch64_cortex-a53`
-    * `aarch64_cortex-a72`
-    * `aarch64_cortex-a76`
-  * `armv7`
-    * `arm_cortex-a7`
-    * `arm_cortex-a7_neon-vfpv4`
-    * `arm_cortex-a8_vfpv3`
-    * `arm_cortex-a9`
-    * `arm_cortex-a9_neon`
-    * `arm_cortex-a9_vfpv3-d16`
-    * `arm_cortex-a15_neon-vfpv4`
-  * `armv6`
-    * `arm_arm1176jzf-s_vfp`
+  | *OpenWRT* architecture | Binaries architecture |
+  | ---------------------- | --------------------- |
+  | `x86_64` | `amd64` |
+  | `aarch64_generic` | `aarch64` |
+  | `aarch64_cortex-a53` | `aarch64` |
+  | `aarch64_cortex-a72` | `aarch64` |
+  | `aarch64_cortex-a76` | `aarch64` |
+  | `arm_cortex-a7` | `armv7` |
+  | `arm_cortex-a7_neon-vfpv4` | `armv7` |
+  | `arm_cortex-a8_vfpv3` | `armv7` |
+  | `arm_cortex-a9` | `armv7` |
+  | `arm_cortex-a9_neon` | `armv7` |
+  | `arm_cortex-a9_vfpv3-d16` | `armv7` |
+  | `arm_cortex-a15_neon-vfpv4` | `armv7` |
+  | `arm_arm1176jzf-s_vfp` | `armv6` |
   
   </details>
 
@@ -57,33 +57,31 @@
 
 * [influxdata/telegraf](https://github.com/influxdata/telegraf)
 
+  Package name: `telegraf-bin`.
+
   [Telegraf](https://influxdata.com/telegraf) packages are created from the official *Linux Binaries*
   for a limited number of CPU architectures.
 
   <details>
   <summary>Supported CPU architectures</summary>
 
-  * `amd64`
-    * `x86_64`
-  * `arm64`
-    * `aarch64_generic`
-    * `aarch64_cortex-a53`
-    * `aarch64_cortex-a72`
-    * `aarch64_cortex-a76`
-  * `armhf`
-    * `arm_cortex-a7`
-    * `arm_cortex-a7_neon-vfpv4`
-    * `arm_cortex-a8_vfpv3`
-    * `arm_cortex-a9`
-    * `arm_cortex-a9_neon`
-    * `arm_cortex-a9_vfpv3-d16`
-    * `arm_cortex-a15_neon-vfpv4`
-  * `armel`
-    * `arm_arm1176jzf-s_vfp`
-  * `mipsel`
-    * `mipsel_mips32`
-  * `riscv64`
-    * `riscv64_riscv64`
+  | *OpenWRT* atchitecture | Binaries architecture |
+  | ---------------------- | --------------------- |
+  | `x86_64` | `amd64` |
+  | `aarch64_generic` | `arm64` |
+  | `aarch64_cortex-a53` | `arm64` |
+  | `aarch64_cortex-a72` | `arm64` |
+  | `aarch64_cortex-a76` | `arm64` |
+  | `arm_cortex-a7` | `armhf` |
+  | `arm_cortex-a7_neon-vfpv4` | `armhf` |
+  | `arm_cortex-a8_vfpv3` | `armhf` |
+  | `arm_cortex-a9` | `armhf` |
+  | `arm_cortex-a9_neon` | `armhf` |
+  | `arm_cortex-a9_vfpv3-d16` | `armhf` |
+  | `arm_cortex-a15_neon-vfpv4` | `armhf` |
+  | `arm_arm1176jzf-s_vfp` | `armel` |
+  | `mipsel_mips32` | `mipsel` |
+  | `riscv64_riscv64` | `riscv64` |
 
   </details>
 
