@@ -205,6 +205,7 @@ jobs:
           rm task_linux_amd64.deb
 
       - name: Checkout
+        id: checkout
         uses: actions/checkout@v4          
 
       - name: Setup Pages
@@ -225,6 +226,9 @@ jobs:
 
       - name: Prepare feeds
         run: task feeds-prepare
+        env:
+          GIT_REF: '${{steps.checkout.outputs.ref}}'
+          GIT_COMMIT: '${{steps.checkout.outputs.commit}}'
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

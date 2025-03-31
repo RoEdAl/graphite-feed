@@ -4,6 +4,8 @@
 
 version: '3'
 
+output: prefixed
+
 includes:
   dev: task/dev
 
@@ -207,26 +209,38 @@ tasks:
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
-            ul        { list-style-type: circle }
-            li.updir  { list-style-type: none; font-size: larger; font-weight: bold }
-            li.feed   { list-style-type: disc; font-weight: bold }
-            li.feed:before   { content: "\2772\2009" }
-            li.feed:after    { content: "\2009\2773" }
-            li.folder:before { content: "\2329\2009" }
-            li.folder:after  { content: "\2009\232A" }
-            li.folder { font-weight: bold }
-            li.ipk    { list-style-type: disclosure-closed; font-size: larger }
-            li.script { list-style-type: square; font-size: larger; font-family: monospace; }
-            footer { text-align: center }
+            table { width: 95%; border-collapse: collapse; margin-left: auto; margin-right: auto}
+            table tbody, tbody td { border: 1px solid }
+            tbody th { border: 2px solid }
+            tbody th, tbody td { padding: .3ex }
+            thead th, thead td { padding-bottom: .5em }
+            tr.updir td { font-size: larger; font-weight: bold }
+            tr.feed td { font-weight: bold }
+            tr.folder td { font-weight: bold }
+            tr.ipk td { font-size: larger }
+            tr.script td { font-size: larger; font-family: monospace; }
+            tr td.name { text-align: left }
+            tr td.fsize { text-align: right }
+            footer { text-align: center; padding-top: 1em }
           </style>
         </head>
         <body>
         <h1>Directory Listing: <em>{{.DOC_DIR}}</em></h1>
-        <ul>
+        <table>
       HTML_DIR_UP: >-
         {{if ne .SDIR  "."}}
-        <li class="updir"><a href="..">··</a></li>
+        <thead>
+        <tr class="updir"><td colspan="2">
+        <a href="..">··</a>
+        </td></tr>
+        </thead>
         {{end}}
+      TABLE_BODY: >-
+        <tbody>
+        <tr>
+          <th class="fname">Name</th>
+          <th class="fsize">Size</th>
+        </tr>
       HTML_LIST:
         sh: |
           ls -1 --group-directories-first "{{.SDIR}}" --ignore=index.html --ignore=tmp | while read file; do
@@ -238,24 +252,31 @@ tasks:
                   eclass=folder
                 fi
               elif [ "${file##*.}" = "ipk" ]; then
+                fsize=$(stat -c%s "{{.SDIR}}/${file}")
+                hfsize=$(numfmt --to=iec ${fsize})
                 eclass=ipk
+                echo "<tr class=\"${eclass}\"><td><a href=\"${file}\">${file}</a></td><td class=\"fsize\">${hfsize}</td></tr>"
+                continue
               elif [ "${file##*.}" = "sh" ]; then
                 eclass=script
               else
                 eclass=file
               fi
-              echo "<li class=\"${eclass}\"><a href=\"${ehref}\">${file}</a></li>"
+              echo "<tr class=\"${eclass}\"><td colspan=\"2\"><a href=\"${file}\">${file}</a></td></tr>"
           done
       HTML_FOOTER: >-
-        </ul>
-        <footer>Generated on <code>{{.TIMESTAMP}}</code>.</footer></body></html>
-
+        </tbody></table>
+        <footer>Generated on <code>{{.TIMESTAMP}}</code>.
+        {{if env "GIT_COMMIT"}}<br>Repository: <a href="https://github.com/RoEdAl/graphite-feed/commit/{{env "GIT_COMMIT" | default "here"}}" target="_blank" rel="noopener noreferrer">{{env "GIT_REF" | default "here"}}</a>.{{end}}
+        </footer>
+        </body></html>
     cmds:
-      - cmd: "echo 'Creating index: {{.INDEX_HTML}}'"
+      - cmd: "echo 'Generating index: {{.INDEX_HTML}}'"
       - cmd: |
           cat << EOF > "{{.INDEX_HTML}}"
           {{.HTML_HEADER}}
           {{trim .HTML_DIR_UP}}
+          {{.TABLE_BODY}}
           {{.HTML_LIST}}
           {{.HTML_FOOTER}}
           EOF
