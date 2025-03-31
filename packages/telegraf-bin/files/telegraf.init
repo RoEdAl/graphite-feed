@@ -43,7 +43,8 @@ validate_section_service() {
   uci_load_validate "${NAME}" service "$1" "$2" \
     'enable:bool:0' \
     'config_file:string:telegraf.conf' \
-    'config_dir:string:telegraf.d'
+    'config_dir:string:telegraf.d' \
+    'jail:bool:1'
 }
 
 service_instance() {
@@ -96,16 +97,20 @@ service_instance() {
   procd_set_param user telegraf
   procd_set_param group telegraf
   procd_set_param no_new_privs 1
-  procd_set_param term_timeout 15
+  procd_set_param term_timeout 10
   procd_set_param limits memlock="$MEMLOCK_LIMIT $((2 * $MEMLOCK_LIMIT))"
-  procd_add_jail ${NAME} requirejail log procfs sysfs
-  procd_add_jail_mount "${config_path}"
-  if [ -n "${config_full_path}" ]; then
-    procd_add_jail_mount "${config_full_path}"
+
+  if [ $jail -ne 0 ]; then
+    procd_add_jail ${NAME} requirejail log procfs sysfs
+    procd_add_jail_mount "${config_path}"
+    if [ -n "${config_full_path}" ]; then
+      procd_add_jail_mount "${config_full_path}"
+    fi
+    procd_add_jail_mount_rw "${LOG_DIR}"
+    procd_add_jail_mount /etc/TZ
+    [ -s /etc/ssl/certs/ca-certificates.crt ] && procd_add_jail_mount /etc/ssl/certs/ca-certificates.crt
   fi
-  procd_add_jail_mount_rw "${LOG_DIR}"
-  procd_add_jail_mount /etc/TZ
-  [ -s /etc/ssl/certs/ca-certificates.crt ] && procd_add_jail_mount /etc/ssl/certs/ca-certificates.crt
+
   procd_close_instance
 }
 
