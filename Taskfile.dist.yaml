@@ -37,6 +37,7 @@ vars:
 
 tasks:
   signing-key-create:
+    run: once
     desc: Prepare signing keys
     status:
       - test -s signing-key/key-build
