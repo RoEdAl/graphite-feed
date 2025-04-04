@@ -267,8 +267,8 @@ tasks:
           done
       HTML_FOOTER: >-
         </tbody></table>
-        <footer>Generated on <code>{{.TIMESTAMP}}</code>.
-        {{if env "GIT_COMMIT"}}<br>Repository: <a href="https://github.com/RoEdAl/graphite-feed/commit/{{env "GIT_COMMIT" | default "here"}}" target="_blank" rel="noopener noreferrer">{{env "GIT_REF" | default "here"}}</a>.{{end}}
+        <footer>Generated on <code>{{html .TIMESTAMP}}</code>.
+        {{if env "GIT_COMMIT"}}<br>Commit: <a href="https://github.com/RoEdAl/graphite-feed/commit/{{env "GIT_COMMIT"}}" target="_blank" rel="noopener noreferrer">{{env "GIT_COMMIT" | substr 0 7 | html}}</a>.{{end}}
         </footer>
         </body></html>
     cmds:

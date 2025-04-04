@@ -227,7 +227,6 @@ jobs:
       - name: Prepare feeds
         run: task feeds-prepare
         env:
-          GIT_REF: '${{steps.checkout.outputs.ref}}'
           GIT_COMMIT: '${{steps.checkout.outputs.commit}}'
 
       - name: Upload artifact
