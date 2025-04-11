@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=carbon-relay-ng
 PKG_VERSION:=1.5.3
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/grafana/carbon-relay-ng/tar.gz/v$(PKG_VERSION)?
@@ -59,7 +59,6 @@ endef
 define Package/carbon-relay-ng/conffiles
 /etc/config/carbon-relay-ng
 /etc/go-carbon/carbon-relay-ng/carbon-relay-ng.yaml
-/etc/go-carbon/carbon-relay-ng/
 endef
 
 $(eval $(call GoBinPackage,carbon-relay-ng))
