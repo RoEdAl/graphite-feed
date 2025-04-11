@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=telegraf-bin
 PKG_VERSION:=1.34.1
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 undefine TELEGRAF_BIN_TARGET
 undefine PKG_HASH
@@ -99,9 +99,10 @@ define Package/telegraf-bin/install
 endef
 
 define Package/telegraf-bin/conffiles
-/etc/config/telegraf.d/agent.conf
-/etc/config/telegraf.d/stdout.conf
+/etc/config/telegraf
 /etc/telegraf/telegraf.conf
+/etc/telegraf/telegraf.d/agent.conf
+/etc/telegraf/telegraf.d/stdout.conf
 endef
 
 $(eval $(call BuildPackage,telegraf-bin))
