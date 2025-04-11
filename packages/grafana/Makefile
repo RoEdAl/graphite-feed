@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=grafana
 PKG_VERSION:=11.6.0
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 undefine GRAFANA_BIN_TARGET
 undefine PKG_HASH

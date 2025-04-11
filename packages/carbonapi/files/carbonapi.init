@@ -3,13 +3,33 @@
 START=99
 STOP=10
 
-USE_PROCD=1
-NAME=carbonapi
-PROG=/usr/bin/carbonapi
-CONFIG_DIR=/etc/carbonapi
+readonly USE_PROCD=1
+readonly NAME=carbonapi
+readonly PROG=/usr/bin/carbonapi
+readonly CONFIG_DIR=/etc/carbonapi
 
 echoerr() {
   echo "$@" | logger -st "$NAME" -p daemon.info
+}
+
+procd_add_timezone_configs() {
+  local tz
+
+  if [ -h /etc/TZ -a -e /etc/TZ ]; then
+    tz=$(cat /etc/TZ)
+  else
+    tz=$(uci get system.@system[0].timezone)
+  fi
+
+  if [ -n "${tz}" ]; then
+    echoerr [$1] Timezone: ${tz}
+    procd_append_param env "TZ=${tz}"
+  fi
+
+  if [ -h /etc/localtime -a -e /etc/localtime ]; then
+    echoerr [$1] Localtime: $(readlink -f /etc/localtime)
+    procd_add_jail_mount /etc/localtime
+  fi
 }
 
 get_config_path() {
@@ -38,8 +58,8 @@ service_instance() {
   fi
 
   local config_path=$(get_config_path "${config_file}")
-  if [ -z "${config_path}" ]; then
-    echoerr "[$1]" 'Invalid configuration file:' ${config_file}
+  if [ ! -s "${config_path}" ]; then
+    echoerr "[$1]" 'Invalid configuration file:' ${config_path}
     return 1
   fi
 
@@ -54,7 +74,7 @@ service_instance() {
   procd_set_param term_timeout 10
   procd_add_jail "$1" ronly requirejail log
   procd_add_jail_mount /etc/hosts
-  procd_add_jail_mount /etc/TZ
+  procd_add_timezone_configs "$1"
   [ -s /etc/ssl/certs/ca-certificates.crt ] && procd_add_jail_mount /etc/ssl/certs/ca-certificates.crt
   procd_add_jail_mount "${config_path}"
   procd_close_instance

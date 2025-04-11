@@ -3,16 +3,36 @@
 START=99
 STOP=10
 
-USE_PROCD=1
-NAME=telegraf
+readonly USE_PROCD=1
+readonly NAME=telegraf
 
 # fixed log directory, not used by default
-LOG_DIR=/var/log/telegraf
-CONF_DIR=/etc/telegraf
-MEMLOCK_LIMIT=8388608
+readonly LOG_DIR=/var/log/telegraf
+readonly CONF_DIR=/etc/telegraf
+readonly MEMLOCK_LIMIT=8388608
 
 echoerr() {
   echo "$@" | logger -st "$NAME" -p daemon.info
+}
+
+procd_add_timezone_configs() {
+  local tz
+
+  if [ -h /etc/TZ -a -e /etc/TZ ]; then
+    tz=$(cat /etc/TZ)
+  else
+    tz=$(uci get system.@system[0].timezone)
+  fi
+
+  if [ -n "${tz}" ]; then
+    echoerr [$1] Timezone: ${tz}
+    procd_append_param env "TZ=${tz}"
+  fi
+
+  if [ -h /etc/localtime -a -e /etc/localtime ]; then
+    echoerr [$1] Localtime: $(readlink -f /etc/localtime)
+    procd_add_jail_mount /etc/localtime
+  fi
 }
 
 get_config_path() {
@@ -107,7 +127,8 @@ service_instance() {
       procd_add_jail_mount "${config_full_path}"
     fi
     procd_add_jail_mount_rw "${LOG_DIR}"
-    procd_add_jail_mount /etc/TZ
+    procd_add_jail_mount /etc/hosts
+    procd_add_timezone_configs "$1"
     [ -s /etc/ssl/certs/ca-certificates.crt ] && procd_add_jail_mount /etc/ssl/certs/ca-certificates.crt
   fi
 
