@@ -63,7 +63,7 @@ grafana_dir() {
 
 validate_section_service() {
   uci_load_validate "${NAME}" service "$1" "$2" \
-    'enable:bool:0' \
+    'enabled:bool:0' \
     'config_file:string:grafana.ini' \
     'data_dir:string:/opt/grafana/data' \
     'plugins_dir:string:/opt/grafana/plugins'
@@ -76,7 +76,7 @@ service_instance() {
     return 1
   fi
 
-  if [ "${enable}" -eq 0 ]; then
+  if [ "${enabled}" -eq 0 ]; then
     echoerr "[$1]" Service is disabled
     return 0
   fi

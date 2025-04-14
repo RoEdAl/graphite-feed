@@ -42,7 +42,7 @@ get_config_path() {
 
 validate_section_service() {
   uci_load_validate "${NAME}" service "$1" "$2" \
-    'enable:bool:0' \
+    'enabled:bool:0' \
     'config_file:string:go-carbon.conf' \
     'whisper_dir:string:/var/lib/graphite/whisper' \
     'whisper_bind_dir:or("", directory)' \
@@ -56,7 +56,7 @@ service_instance() {
     return 1
   fi
 
-  if [ "${enable}" -eq 0 ]; then
+  if [ "${enabled}" -eq 0 ]; then
     echoerr "[$1]" Service is disabled
     return 0
   fi

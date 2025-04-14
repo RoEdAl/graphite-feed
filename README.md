@@ -112,10 +112,10 @@ opkg install go-carbon carbonapi carbon-c-relay-tiny
 
 > [!IMPORTANT]
 > All services are **disabled** by default.
-> To enable specific service change `enable` flag to `1` in relevant configuration file from `/etc/config` directory.
+> To enable specific service change `enabled` flag to `1` in relevant configuration file from `/etc/config` directory.
 >
 > ```sh
-> uci set go-carbon.main.enable=1
+> uci set go-carbon.main.enabled=1
 > uci commit
 > service go-carbon restart
 > ```

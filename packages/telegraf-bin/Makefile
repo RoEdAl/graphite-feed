@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=telegraf-bin
 PKG_VERSION:=1.34.1
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 undefine TELEGRAF_BIN_TARGET
 undefine PKG_HASH

@@ -8,7 +8,7 @@ readonly NAME=collectd-statsd
 readonly PROG=/usr/sbin/collectd
 
 BASE_DIR=
-SERVICE_ENABLE=0
+SERVICE_ENABLED=0
 CONFIG_VALID=2
 
 echoerr() {
@@ -39,8 +39,8 @@ base_dir() {
   fi
 
   BASE_DIR=$BaseDir
-  SERVICE_ENABLE=${enable:-0}
-  [ "$SERVICE_ENABLE" -eq 0 ] && return 0
+  SERVICE_ENABLED=${enabled:-0}
+  [ "$SERVICE_ENABLED" -eq 0 ] && return 0
 
   if [ "$CreateBaseDir" -ne 0 ]; then
     mkdir -p $BASE_DIR
@@ -81,7 +81,7 @@ EOF
 
 validate_section_service() {
   uci_load_validate "${NAME}" service service $1 \
-    'enable:bool:0' \
+    'enabled:bool:0' \
     'Interval:range(1,3600):15' \
     'BaseDir:string:/run/collectd-statsd' \
     'CreateBaseDir:bool:1' \
@@ -211,7 +211,7 @@ start_service() {
     return 1
   fi
 
-  if [ "$SERVICE_ENABLE" -eq 0 ]; then
+  if [ "$SERVICE_ENABLED" -eq 0 ]; then
     echoerr Service is disabled
     return 0
   fi
