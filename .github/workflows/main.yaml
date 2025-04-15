@@ -154,13 +154,6 @@ jobs:
           ${{secrets.BUILDKEY_PUB}}
           USIGN
 
-      - name: Download Grafana binaries
-        if: matrix.target.pkg-grafana
-        uses: actions/download-artifact@v4
-        with:
-          path: openwrt-sdk/dl
-          pattern: grafana-bin-${{ matrix.target.pkg-grafana }}
-
       - name: Build packages
         run: task build
         env:
