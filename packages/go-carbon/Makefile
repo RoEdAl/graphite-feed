@@ -14,6 +14,7 @@ PKG_INSTALL:=1
 
 GO_PKG:=github.com/go-graphite/go-carbon
 GO_PKG_LDFLAGS_X:=main.BuildVersion=$(PKG_VERSION)
+GO_PKG_TAGS:=timetzdata
 
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk

@@ -15,20 +15,16 @@ echoerr() {
 procd_add_timezone_configs() {
   local tz
 
-  if [ -h /etc/TZ -a -e /etc/TZ ]; then
-    tz=$(cat /etc/TZ)
-  else
-    tz=$(uci get system.@system[0].timezone)
-  fi
-
-  if [ -n "${tz}" ]; then
-    echoerr [$1] Timezone: ${tz}
-    procd_append_param env "TZ=${tz}"
-  fi
-
   if [ -h /etc/localtime -a -e /etc/localtime ]; then
-    echoerr [$1] Localtime: $(readlink -f /etc/localtime)
-    procd_add_jail_mount /etc/localtime
+    tz=$(readlink -f /etc/localtime)
+    echoerr [$1] Localtime: ${tz}
+    procd_add_jail_mount "${tz}:/etc/localtime"
+  else
+    tz=$(uci get system.@system[0].zonename)
+    if [ -n "${tz}" ]; then
+      echoerr [$1] Timezone: ${tz}
+      procd_append_param env "TZ=${tz}"
+    fi
   fi
 }
 

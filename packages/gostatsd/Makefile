@@ -16,6 +16,7 @@ PKG_HASH:=29bd4f6c77dc191021c1d0077a32233c973395f3
 PKG_UNIX_EPOCH:=1744169407
 
 GO_PKG:=github.com/atlassian/gostatsd
+GO_PKG_TAGS:=timetzdata
 GO_PKG_LDFLAGS_X:=\
 	main.Version=$(PKG_VERSION) \
 	main.GitCommit=$(PKG_HASH) \

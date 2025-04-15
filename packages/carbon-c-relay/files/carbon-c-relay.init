@@ -14,6 +14,7 @@ echoerr() {
 
 procd_add_timezone_configs() {
   local tz
+  local localtime
 
   if [ -h /etc/TZ -a -e /etc/TZ ]; then
     tz=$(cat /etc/TZ)
@@ -27,8 +28,9 @@ procd_add_timezone_configs() {
   fi
 
   if [ -h /etc/localtime -a -e /etc/localtime ]; then
-    echoerr [$1] Localtime: $(readlink -f /etc/localtime)
-    procd_add_jail_mount /etc/localtime
+    localtime=$(readlink -f /etc/localtime)
+    echoerr [$1] Localtime: ${localtime}
+    procd_add_jail_mount "${localtime}:/etc/localtime"
   fi
 }
 

@@ -14,6 +14,7 @@ PKG_INSTALL:=1
 
 GO_PKG:=github.com/go-graphite/carbonapi
 GO_PKG_LDFLAGS_X:=main.BuildVersion=$(PKG_VERSION)
+GO_PKG_TAGS:=timetzdata
 # GO_PKG_TAGS=cairo
 
 include $(INCLUDE_DIR)/package.mk
