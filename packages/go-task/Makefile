@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=go-task
-PKG_VERSION:=3.42.1
+PKG_VERSION:=3.43.2
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
