@@ -13,6 +13,9 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  TASK_OUTPUT_MODE: prefixed
+
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
@@ -155,13 +158,13 @@ jobs:
           USIGN
 
       - name: Build packages
-        run: task build
+        run: task -o ${{ env.TASK_OUTPUT_MODE }} build
         env:
           PKG_GRAFANA: '${{ matrix.target.pkg-grafana && 1 || 0 }}'
           PKG_TELEGRAF: '${{ matrix.target.pkg-telegraf && 1 || 0 }}'
 
       - name: Copy packages
-        run: task package-copy-to-feeds
+        run: task -o ${{ env.TASK_OUTPUT_MODE }} package-copy-to-feeds
 
       - name: Upload feed
         uses: actions/upload-artifact@v4
@@ -218,7 +221,7 @@ jobs:
           name: signing-key
 
       - name: Prepare feeds
-        run: task feeds-prepare
+        run: task -o ${{ env.TASK_OUTPUT_MODE }} feeds-prepare
         env:
           GIT_COMMIT: '${{steps.checkout.outputs.commit}}'
 
