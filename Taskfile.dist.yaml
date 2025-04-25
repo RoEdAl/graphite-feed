@@ -216,8 +216,8 @@ tasks:
             tr.updir td { font-size: larger; font-weight: bold }
             tr.feed td { font-weight: bold }
             tr.folder td { font-weight: bold }
-            tr.ipk td { font-size: larger }
-            tr.script td { font-size: larger; font-family: monospace; }
+            tr.script td { font-family: monospace; }
+            tr.file td { font-size: smaller; font-family: system-ui }
             tr td.name { text-align: left }
             tr td.fsize { text-align: right }
             footer { text-align: center; padding-top: 1em }
