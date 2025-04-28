@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=go-task
-PKG_VERSION:=3.43.2
+PKG_VERSION:=3.43.3
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
@@ -19,11 +19,11 @@ include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/go-task
-  SECTION:=utils
-  CATEGORY:=Utilities
-  TITLE:=A task runner written in Go
-  URL:=https://taskfile.dev/
-  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
+	SECTION:=utils
+	CATEGORY:=Utilities
+	TITLE:=A task runner written in Go
+	URL:=https://taskfile.dev/
+	DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 
 define Package/go-task/description
