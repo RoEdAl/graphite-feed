@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gostatsd
-PKG_VERSION:=40.0.4
+PKG_VERSION:=40.0.5
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
@@ -12,8 +12,8 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-PKG_HASH:=1206cd8eec3769dcbae1fcf2b4ceb6e2d0993688
-PKG_UNIX_EPOCH:=1744855988
+PKG_HASH:=42d3b3366d99621827761c08fad838739274554f
+PKG_UNIX_EPOCH:=1746659815
 
 GO_PKG:=github.com/atlassian/gostatsd
 GO_PKG_TAGS:=timetzdata
