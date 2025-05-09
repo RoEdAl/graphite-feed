@@ -1,5 +1,5 @@
 diff --git a/lang/golang/golang-values.mk b/lang/golang/golang-values.mk
-index d57de5f32..098b9184e 100644
+index d57de5f..098b918 100644
 --- a/lang/golang/golang-values.mk
 +++ b/lang/golang/golang-values.mk
 @@ -167,17 +167,22 @@ else ifeq ($(GO_ARCH),amd64)
@@ -36,7 +36,7 @@ index d57de5f32..098b9184e 100644
  
  else ifneq ($(filter $(GO_ARCH),mips mipsle),)
 diff --git a/lang/golang/golang/Makefile b/lang/golang/golang/Makefile
-index 4ff73021d..3a8f53639 100644
+index e8e2612..91bc80e 100644
 --- a/lang/golang/golang/Makefile
 +++ b/lang/golang/golang/Makefile
 @@ -7,8 +7,8 @@
@@ -46,7 +46,7 @@ index 4ff73021d..3a8f53639 100644
 -GO_VERSION_MAJOR_MINOR:=1.23
 -GO_VERSION_PATCH:=8
 +GO_VERSION_MAJOR_MINOR:=1.24
-+GO_VERSION_PATCH:=2
++GO_VERSION_PATCH:=3
  
  PKG_NAME:=golang
  PKG_VERSION:=$(GO_VERSION_MAJOR_MINOR)$(if $(GO_VERSION_PATCH),.$(GO_VERSION_PATCH))
@@ -55,7 +55,7 @@ index 4ff73021d..3a8f53639 100644
  PKG_SOURCE:=go$(PKG_VERSION).src.tar.gz
  PKG_SOURCE_URL:=$(GO_SOURCE_URLS)
 -PKG_HASH:=0ca1f1e37ea255e3ce283af3f4e628502fb444587da987a5bb96d6c6f15930d4
-+PKG_HASH:=9dc77ffadc16d837a1bf32d99c624cb4df0647cee7b119edd9e7b1bcc05f2e00
++PKG_HASH:=229c08b600b1446798109fae1f569228102c8473caba8104b6418cb5bc032878
  
  PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
  PKG_LICENSE:=BSD-3-Clause
