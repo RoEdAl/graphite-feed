@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=carbon-relay-ng
-PKG_VERSION:=1.5.3
-PKG_RELEASE:=3
+PKG_VERSION:=1.5.5
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/grafana/carbon-relay-ng/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=dfb52c46b29fffb94025a16e7292cb974da87f8b1899db815e051759b5284bfa
+PKG_HASH:=5f09d40ca02c331f573bca11a0c55891d2ffd70fef4284f3a786b751d5b06d82
 
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
 PKG_LICENSE:=MIT
@@ -59,7 +59,7 @@ endef
 
 define Package/carbon-relay-ng/conffiles
 /etc/config/carbon-relay-ng
-/etc/go-carbon/carbon-relay-ng/carbon-relay-ng.yaml
+/etc/carbon-relay-ng/carbon-relay-ng.yaml
 endef
 
 $(eval $(call GoBinPackage,carbon-relay-ng))
