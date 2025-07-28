@@ -1,4 +1,4 @@
-# Various *OpenWRT* packages of *Graphite*-related projects
+# *OpenWRT* packages of *Graphite*-related projects
 
 > [!IMPORTANT]
 > The only supported *OpenWRT* version is **24.10**.
