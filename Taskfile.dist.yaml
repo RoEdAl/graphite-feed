@@ -18,7 +18,6 @@ vars:
     carbon-relay-ng
     gostatsd
     collectd-statsd
-    go-task
     {{if .PKG_GRAFANA|default 0|int|ne 0}}grafana{{end}}
     {{if .PKG_TELEGRAF|default 0|int|ne 0}}telegraf-bin{{end}}
 
@@ -29,7 +28,6 @@ vars:
     carbon-relay-ng
     gostatsd
     collectd-statsd
-    go-task
     {{if .PKG_GRAFANA|default 0|int|ne 0}}grafana-bin{{end}}
     {{if .PKG_TELEGRAF|default 0|int|ne 0}}telegraf-bin{{end}}
 

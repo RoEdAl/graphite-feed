@@ -50,11 +50,6 @@
   
   </details>
 
-* [go-task/task](https://github.com/go-task/task)
-
-  A [task runner](https://taskfile.dev/). Simpler *Make* alternative written in *Go*. \
-  You may also consider this tool as *Bash* on steroids.
-
 * [influxdata/telegraf](https://github.com/influxdata/telegraf)
 
   Package name: `telegraf-bin`.
