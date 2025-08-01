@@ -11,7 +11,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=carbon-c-relay
 PKG_VERSION:=3.8.1
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/grobian/carbon-c-relay/tar.gz/v$(PKG_VERSION)?
@@ -19,7 +19,6 @@ PKG_HASH:=c6a10775cba22ecb6137a816e403f090a59e8b5213f9f0daa14f137775da4f20
 
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
 PKG_LICENSE:=Apache-2.0
-PKG_LICENSE_FILES:=LICENSE.md
 
 PKG_FIXUP:=autoreconf
 PKG_BUILD_DEPENDS+=zlib liblz4 pcre2 openssl

@@ -2,11 +2,10 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=carbonapi
 PKG_VERSION:=0.17.0
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
 PKG_LICENSE:=BSD-2
-PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
