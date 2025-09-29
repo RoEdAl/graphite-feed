@@ -1,7 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=grafana
-PKG_VERSION:=12.1.0
+PKG_VERSION:=12.2.0
+GRAFANA_TS:=17949786146
 PKG_RELEASE:=1
 
 undefine GRAFANA_BIN_TARGET
@@ -12,15 +13,15 @@ GRAFANA_BIN_TARGET:=amd64
 else ifeq ($(ARCH),arm)
 ARM_TARGET_CORE:=$(word 1,$(subst +,$(space),$(call qstrip,$(CONFIG_CPU_TYPE))))
 ifneq ($(filter $(ARM_TARGET_CORE),cortex-a7 cortex-a8 cortex-a9 cortex-a15),)
-GRAFANA_BIN_TARGET:=armv7
+GRAFANA_BIN_TARGET:=arm-7
 else
 ARM_TARGET_FPU:=$(word 2,$(subst +,$(space),$(call qstrip,$(CONFIG_CPU_TYPE))))
 ifeq ($(ARM_TARGET_FPU),)
-GRAFANA_BIN_TARGET:=armv5
+GRAFANA_BIN_TARGET:=arm-5
 else ifneq ($(filter $(ARM_TARGET_FPU),vfp vfpv2),)
-GRAFANA_BIN_TARGET:=armv6
+GRAFANA_BIN_TARGET:=arm-6
 else
-GRAFANA_BIN_TARGET:=armv7
+GRAFANA_BIN_TARGET:=arm-7
 endif
 endif
 else ifeq ($(ARCH),aarch64)
@@ -28,20 +29,20 @@ GRAFANA_BIN_TARGET:=arm64
 endif
 
 ifeq ($(GRAFANA_BIN_TARGET),amd64)
-PKG_HASH:=69923cf95824008a6a7529f242295ecc2bc6b1dc4e5142c889971e88407d8712
+PKG_HASH:=c4f53551ed4887c792caeb9d02fa0c1a36e3db9ee8bdda32b1ced810cb135a93
 else ifeq ($(GRAFANA_BIN_TARGET),arm64)
-PKG_HASH:=2f53c7a99a09c21088707dc3d933f4a4455c33e458a9e8df564485e3b7c7b6e7
-else ifeq ($(GRAFANA_BIN_TARGET),armv6)
-PKG_HASH:=3d930a2164625469f46a25fce0498aec3b8cea836350d75fd4c6be5df512c390
-else ifeq ($(GRAFANA_BIN_TARGET),armv7)
-PKG_HASH:=414673d3316c12e6ca0712d227d799475f6da4b522b0ce6f160f40084853fe20
+PKG_HASH:=ef84a75b6888e4674e3d2a21ae586cda61999ec202298e855c5de71fd242eb35
+else ifeq ($(GRAFANA_BIN_TARGET),arm-6)
+PKG_HASH:=2858bd8c6c84a7698cc3af3e489cb0f1f902214c0d8862f949da17920c73a80e
+else ifeq ($(GRAFANA_BIN_TARGET),arm-7)
+PKG_HASH:=5e43bdcde006de7a32a0077ea145c9cc09a8d1309df8c5447e18d2751bf41d9d
 else
 PKG_HASH:=0000000000000000000000000000000000000000000000000000000000000000
 endif
 
-PKG_SOURCE_URL:=https://dl.grafana.com/oss/release/
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).linux-$(GRAFANA_BIN_TARGET).tar.gz
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-v$(PKG_VERSION)
+PKG_SOURCE_URL:=https://dl.grafana.com/$(PKG_NAME)/release/$(PKG_VERSION)
+PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION)_$(GRAFANA_TS)_linux_$(GRAFANA_BIN_TARGET).tar.gz
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
 PKG_LICENSE:=AGPL-3.0
@@ -90,7 +91,6 @@ define Package/grafana-bin/install
 
 	$(CP) $(PKG_BUILD_DIR)/conf $(1)/usr/share/grafana
 	$(CP) $(PKG_BUILD_DIR)/docs $(1)/usr/share/grafana
-	$(CP) $(PKG_BUILD_DIR)/npm-artifacts $(1)/usr/share/grafana
 	$(CP) $(PKG_BUILD_DIR)/packaging $(1)/usr/share/grafana
 	$(CP) $(PKG_BUILD_DIR)/plugins-bundled $(1)/usr/share/grafana
 	$(CP) $(PKG_BUILD_DIR)/public $(1)/usr/share/grafana
