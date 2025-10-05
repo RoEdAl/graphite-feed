@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=carbonapi
-PKG_VERSION:=0.17.0
-PKG_RELEASE:=4
+PKG_VERSION:=0.18.1
+PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
 PKG_LICENSE:=BSD-2
