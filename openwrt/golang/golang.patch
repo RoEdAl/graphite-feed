@@ -55,7 +55,7 @@ index 727739e..fc85684 100644
  
  else ifneq ($(filter $(GO_ARCH),mips mipsle),)
 diff --git a/lang/golang/golang/Makefile b/lang/golang/golang/Makefile
-index d71cc7c..1275f8d 100644
+index d71cc7c..1235cb6 100644
 --- a/lang/golang/golang/Makefile
 +++ b/lang/golang/golang/Makefile
 @@ -7,8 +7,8 @@
@@ -154,3 +154,11 @@ index d71cc7c..1275f8d 100644
  		$(if $(HOST_GO_ENABLE_PIE),GO_LDFLAGS="-buildmode pie") \
  		$(HOST_GO_VARS) \
  	)
+@@ -326,6 +357,7 @@ PKG_GO_ZBOOTSTRAP_MODS:= \
+ 	s/defaultGO386 = `[^`]*`/defaultGO386 = `$(or $(GO_386),sse2)`/; \
+ 	s/defaultGOAMD64 = `[^`]*`/defaultGOAMD64 = `$(or $(GO_AMD64),v1)`/; \
+ 	s/defaultGOARM = `[^`]*`/defaultGOARM = `$(or $(GO_ARM),7)`/; \
++	s/defaultGOARM64 = `[^`]*`/defaultGOARM64 = `$(or $(GO_ARM64),v8.0)`/; \
+ 	s/defaultGOMIPS = `[^`]*`/defaultGOMIPS = `$(or $(GO_MIPS),hardfloat)`/; \
+ 	s/defaultGOMIPS64 = `[^`]*`/defaultGOMIPS64 = `$(or $(GO_MIPS64),hardfloat)`/; \
+ 	s/defaultGOPPC64 = `[^`]*`/defaultGOPPC64 = `$(or $(GO_PPC64),power8)`/;
