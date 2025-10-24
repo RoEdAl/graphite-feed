@@ -55,7 +55,7 @@ index 727739e..fc85684 100644
  
  else ifneq ($(filter $(GO_ARCH),mips mipsle),)
 diff --git a/lang/golang/golang/Makefile b/lang/golang/golang/Makefile
-index d71cc7c..eea81cb 100644
+index fc12f03..0be055f 100644
 --- a/lang/golang/golang/Makefile
 +++ b/lang/golang/golang/Makefile
 @@ -7,8 +7,8 @@
@@ -131,15 +131,7 @@ index d71cc7c..eea81cb 100644
  # Host
  
  ifeq ($(GO_HOST_PIE_SUPPORTED),1)
-@@ -267,6 +292,7 @@ endef
- define Host/Compile
- 	$(call GoCompiler/Bootstrap/Make, \
- 		$(HOST_GO_VARS) \
-+		CC="$(HOSTCC_NOCACHE) -std=gnu17" \
- 	)
- 
- 	$(call GoCompiler/Bootstrap-1.17/Make, \
-@@ -279,8 +305,13 @@ define Host/Compile
+@@ -280,8 +305,13 @@ define Host/Compile
  		$(HOST_GO_VARS) \
  	)
  
@@ -154,7 +146,7 @@ index d71cc7c..eea81cb 100644
  		$(if $(HOST_GO_ENABLE_PIE),GO_LDFLAGS="-buildmode pie") \
  		$(HOST_GO_VARS) \
  	)
-@@ -326,6 +357,7 @@ PKG_GO_ZBOOTSTRAP_MODS:= \
+@@ -327,6 +357,7 @@ PKG_GO_ZBOOTSTRAP_MODS:= \
  	s/defaultGO386 = `[^`]*`/defaultGO386 = `$(or $(GO_386),sse2)`/; \
  	s/defaultGOAMD64 = `[^`]*`/defaultGOAMD64 = `$(or $(GO_AMD64),v1)`/; \
  	s/defaultGOARM = `[^`]*`/defaultGOARM = `$(or $(GO_ARM),7)`/; \

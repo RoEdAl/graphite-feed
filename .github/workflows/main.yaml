@@ -122,11 +122,8 @@ jobs:
           sudo apt-get -qq update -y
           sudo apt-get -qq -o Dpkg::Use-Pty=0 -o APT::Acquire::Retries=10 install -y --no-install-recommends python3-pyelftools
 
-      - name: Install (go-)task
-        run: |
-          wget -q http://github.com/go-task/task/releases/latest/download/task_linux_amd64.deb
-          sudo dpkg --install task_linux_amd64.deb
-          rm task_linux_amd64.deb
+      - name: Install Task
+        uses: go-task/setup-task@v1
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -134,8 +131,8 @@ jobs:
       - name: Calculate image name and URL
         id: owrtsdk
         run: |
-          image_name=openwrt-sdk-24.10.3-${{matrix.target.sdk-name}}.Linux-x86_64
-          image_url=http://downloads.openwrt.org/releases/24.10.3/targets/${{matrix.target.sdk-path}}
+          image_name=openwrt-sdk-24.10.4-${{matrix.target.sdk-name}}.Linux-x86_64
+          image_url=http://downloads.openwrt.org/releases/24.10.4/targets/${{matrix.target.sdk-path}}
           echo "IMAGE_NAME=$image_name" >> $GITHUB_OUTPUT
           echo "IMAGE_URL=$image_url" >> $GITHUB_OUTPUT
 
@@ -144,6 +141,7 @@ jobs:
           wget -q ${{steps.owrtsdk.outputs.IMAGE_URL}}/${{steps.owrtsdk.outputs.IMAGE_NAME}}.tar.zst
           tar -xf ${{steps.owrtsdk.outputs.IMAGE_NAME}}.tar.zst
           ln -s ${{steps.owrtsdk.outputs.IMAGE_NAME}} openwrt-sdk
+          rm ${{steps.owrtsdk.outputs.IMAGE_NAME}}.tar.zst
 
       - name: Prepare signing key
         run: |
@@ -194,17 +192,14 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Install (go-)task
-        run: |
-          wget -q http://github.com/go-task/task/releases/latest/download/task_linux_amd64.deb
-          sudo dpkg --install task_linux_amd64.deb
-          rm task_linux_amd64.deb
+      - name: Install Task
+        uses: go-task/setup-task@v1
 
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4          
 
-      - name: Setup Pages
+      - name: Setup pages
         uses: actions/configure-pages@v5
 
       - name: Download feeds
