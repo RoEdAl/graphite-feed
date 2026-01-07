@@ -1,7 +1,6 @@
 #!/bin/sh
 
 readonly FEEDS_URL=https://roedal.github.io/graphite-feed
-readonly FINGERPRINT=481fd63dd3054e01
 
 echoerr() {
   echo "$@" | logger -st graphite-feed
@@ -13,7 +12,7 @@ get_distrib_arch() {
 }
 
 test_feed() {
-  wget -qO /dev/null "$1/Packages.manifest"
+  wget -qO /dev/null "$1/packages.adb"
 }
 
 if [ ! -s /etc/openwrt_release ]; then
@@ -34,19 +33,19 @@ if ! test_feed "$FEED_URL"; then
   exit 1
 fi
 
-readonly CUSTOM_FEED=$(cat /etc/opkg/customfeeds.conf | grep graphite)
-if [ -z "$CUSTOM_FEED" ]; then
-  echoerr Installing feed: $FEED_URL
-  echo "src/gz graphite $FEED_URL" >>/etc/opkg/customfeeds.conf
+eadonly REPO_LIST=/etc/apk/repositories.d/graphite.list
+if [ ! -s "$REPO_LIST" ]; then
+  echoerr Installing repository: $FEED_URL
+  echo "$FEED_URL/packages.adb" > $REPO_LIST
   if [ $? -ne 0 ]; then
     exit 1
   fi
 fi
 
-readonly SIGNING_KEY="/etc/opkg/keys/$FINGERPRINT"
+readonly SIGNING_KEY="/etc/apk/keys/graphite.pem"
 if [ ! -s "$SIGNING_KEY" ]; then
-  echoerr Installing signing key: $FINGERPRINT
-  if ! wget -qO $SIGNING_KEY "$FEEDS_URL/signing-key/$FINGERPRINT"; then
+  echoerr Installing signing key
+  if ! wget -qO $SIGNING_KEY "$FEEDS_URL/signing-key/graphite.pem"; then
     exit 1
   fi
 fi

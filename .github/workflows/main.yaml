@@ -33,83 +33,83 @@ jobs:
         target:
           - target: x86_64
             sdk-path: x86/64
-            sdk-name: x86-64_gcc-13.3.0_musl
+            sdk-name: x86-64_gcc-14.3.0_musl
             pkg-grafana: amd64
             pkg-telegraf: amd64
           - target: aarch64_generic
             sdk-path: rockchip/armv8
-            sdk-name: rockchip-armv8_gcc-13.3.0_musl
+            sdk-name: rockchip-armv8_gcc-14.3.0_musl
             pkg-grafana: arm64
             pkg-telegraf: arm64
           - target: aarch64_cortex-a53
             sdk-path: sunxi/cortexa53
-            sdk-name: sunxi-cortexa53_gcc-13.3.0_musl
+            sdk-name: sunxi-cortexa53_gcc-14.3.0_musl
             pkg-grafana: arm64
             pkg-telegraf: arm64
           - target: aarch64_cortex-a72
             sdk-path: bcm27xx/bcm2711
-            sdk-name: bcm27xx-bcm2711_gcc-13.3.0_musl
+            sdk-name: bcm27xx-bcm2711_gcc-14.3.0_musl
             pkg-grafana: arm64
             pkg-telegraf: arm64
           - target: aarch64_cortex-a76
             sdk-path: bcm27xx/bcm2712
-            sdk-name: bcm27xx-bcm2712_gcc-13.3.0_musl
+            sdk-name: bcm27xx-bcm2712_gcc-14.3.0_musl
             pkg-grafana: arm64
             pkg-telegraf: arm64
           - target: arm_cortex-a7
             sdk-path: mediatek/mt7629
-            sdk-name: mediatek-mt7629_gcc-13.3.0_musl_eabi
+            sdk-name: mediatek-mt7629_gcc-14.3.0_musl_eabi
             pkg-grafana: armv7
             pkg-telegraf: armhf
           - target: arm_cortex-a7_neon-vfpv4
             sdk-path: sunxi/cortexa7
-            sdk-name: sunxi-cortexa7_gcc-13.3.0_musl_eabi
+            sdk-name: sunxi-cortexa7_gcc-14.3.0_musl_eabi
             pkg-grafana: armv7
             pkg-telegraf: armhf
           - target: arm_cortex-a8_vfpv3
             sdk-path: sunxi/cortexa8
-            sdk-name: sunxi-cortexa8_gcc-13.3.0_musl_eabi
+            sdk-name: sunxi-cortexa8_gcc-14.3.0_musl_eabi
             pkg-grafana: armv7
             pkg-telegraf: armhf
           - target: arm_cortex-a9
             sdk-path: bcm53xx/generic
-            sdk-name: bcm53xx-generic_gcc-13.3.0_musl_eabi
+            sdk-name: bcm53xx-generic_gcc-14.3.0_musl_eabi
             pkg-grafana: armv7
             pkg-telegraf: armhf
           - target: arm_cortex-a9_neon
             sdk-path: imx/cortexa9
-            sdk-name: imx-cortexa9_gcc-13.3.0_musl_eabi
+            sdk-name: imx-cortexa9_gcc-14.3.0_musl_eabi
             pkg-grafana: armv7
             pkg-telegraf: armhf
           - target: arm_cortex-a9_vfpv3-d16
             sdk-path: mvebu/cortexa9
-            sdk-name: mvebu-cortexa9_gcc-13.3.0_musl_eabi
+            sdk-name: mvebu-cortexa9_gcc-14.3.0_musl_eabi
             pkg-grafana: armv7
             pkg-telegraf: armhf
           - target: arm_cortex-a15_neon-vfpv4
             sdk-path: ipq806x/generic
-            sdk-name: ipq806x-generic_gcc-13.3.0_musl_eabi
+            sdk-name: ipq806x-generic_gcc-14.3.0_musl_eabi
             pkg-grafana: armv7
             pkg-telegraf: armhf
           - target: arm_arm1176jzf-s_vfp
             sdk-path: bcm27xx/bcm2708
-            sdk-name: bcm27xx-bcm2708_gcc-13.3.0_musl_eabi
+            sdk-name: bcm27xx-bcm2708_gcc-14.3.0_musl_eabi
             pkg-grafana: armv6
             pkg-telegraf: armbe
           - target: mipsel_mips32
             sdk-path: bcm47xx/generic
-            sdk-name: bcm47xx-generic_gcc-13.3.0_musl
+            sdk-name: bcm47xx-generic_gcc-14.3.0_musl
             pkg-telegraf: mipsel
           - target: riscv64_riscv64
             sdk-path: starfive/generic
-            sdk-name: starfive-generic_gcc-13.3.0_musl
+            sdk-name: starfive-generic_gcc-14.3.0_musl
             pkg-telegraf: riscv64
           - target: mips64_mips64r2
             sdk-path: malta/be64
-            sdk-name: malta-be64_gcc-13.3.0_musl
+            sdk-name: malta-be64_gcc-14.3.0_musl
           - target: mips64el_mips64r2
             sdk-path: malta/le64
-            sdk-name: malta-le64_gcc-13.3.0_musl            
+            sdk-name: malta-le64_gcc-14.3.0_musl            
 
     steps:
       - name: Install required packages
@@ -131,8 +131,8 @@ jobs:
       - name: Calculate image name and URL
         id: owrtsdk
         run: |
-          image_name=openwrt-sdk-24.10.5-${{matrix.target.sdk-name}}.Linux-x86_64
-          image_url=http://downloads.openwrt.org/releases/24.10.5/targets/${{matrix.target.sdk-path}}
+          image_name=openwrt-sdk-25.12.0-rc2--${{matrix.target.sdk-name}}.Linux-x86_64
+          image_url=http://downloads.openwrt.org/releases/25.12.0-rc2/targets/${{matrix.target.sdk-path}}
           echo "IMAGE_NAME=$image_name" >> $GITHUB_OUTPUT
           echo "IMAGE_URL=$image_url" >> $GITHUB_OUTPUT
 
@@ -147,13 +147,13 @@ jobs:
         run: |
           mkdir -p signing-key
           
-          cat << USIGN > signing-key/key-build
-          ${{secrets.BUILDKEY}}
-          USIGN
+          cat << PEM > signing-key/private-key.pem
+          ${{secrets.APK_BUILDKEY_PRIV}}
+          PEM
 
-          cat << USIGN > signing-key/key-build.pub
-          ${{secrets.BUILDKEY_PUB}}
-          USIGN
+          cat << PEM > signing-key/public-key.pem
+          ${{secrets.APK_BUILDKEY_PUB}}
+          PEM
 
       - name: Build packages
         run: task -o ${{ env.TASK_OUTPUT_MODE }} build
@@ -180,7 +180,7 @@ jobs:
           name: signing-key
           path: |
             signing-key/*
-            !signing-key/key-build
+            !signing-key/private-key.pem
           if-no-files-found: error
           retention-days: 1
           compression-level: 0

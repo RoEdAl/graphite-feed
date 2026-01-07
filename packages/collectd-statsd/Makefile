@@ -12,8 +12,8 @@ define Package/collectd-statsd
 	TITLE:=StatsD server based on CollectD
 	MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
 	PKGARCH:=all
-	# DEPENDS:=+collectd +collectd-mod-logfile +collectd-mod-statsd +collectd-mod-write-graphite
-	EXTRA_DEPENDS:=collectd, collectd-mod-logfile, collectd-mod-statsd, collectd-mod-write-graphite
+	DEPENDS:=+collectd +collectd-mod-logfile +collectd-mod-statsd +collectd-mod-write-graphite
+	#EXTRA_DEPENDS:=collectd, collectd-mod-logfile, collectd-mod-statsd, collectd-mod-write-graphite
 	USERID:=statsd:statsd
 endef
 

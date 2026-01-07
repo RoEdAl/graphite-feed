@@ -1,7 +1,7 @@
 # *OpenWRT* packages of *Graphite*-related projects
 
 > [!IMPORTANT]
-> The only supported *OpenWRT* version is **24.10**.
+> The only supported *OpenWRT* version is **25.12**.
 
 ## Packages
 
@@ -91,18 +91,13 @@ wget -qO - https://roedal.github.io/graphite-feed/graphite-feed.sh | sh
 ### Update package list
 
 ```sh
-$ opkg update
-Downloading https://roedal.github.io/graphite-feed/aarch64_generic/graphite/Packages.gz
-Updated list of available packages in /var/opkg-lists/graphite
-Downloading https://roedal.github.io/graphite-feed/aarch64_generic/graphite/Packages.sig
-Signature check passed.
-⋯
+apk update
 ```
 
 ### Install required package(s)
 
 ```sh
-opkg install go-carbon carbonapi carbon-c-relay-tiny
+apk add go-carbon carbonapi carbon-c-relay-tiny
 ```
 
 > [!IMPORTANT]
