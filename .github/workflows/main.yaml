@@ -123,10 +123,10 @@ jobs:
           sudo apt-get -qq -o Dpkg::Use-Pty=0 -o APT::Acquire::Retries=10 install -y --no-install-recommends python3-pyelftools
 
       - name: Install Task
-        uses: go-task/setup-task@v1
+        uses: go-task/setup-task@v2
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Calculate image name and URL
         id: owrtsdk
@@ -165,7 +165,7 @@ jobs:
         run: task -o ${{ env.TASK_OUTPUT_MODE }} package-copy-to-feeds
 
       - name: Upload feed
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: owrt-feed-${{ matrix.target.target }}
           path: feeds/*
@@ -175,7 +175,7 @@ jobs:
 
       - name: Upload signing key
         if: matrix.target.target == 'x86_64'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: signing-key
           path: |
@@ -193,24 +193,24 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Install Task
-        uses: go-task/setup-task@v1
+        uses: go-task/setup-task@v2
 
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v4          
+        uses: actions/checkout@v6          
 
       - name: Setup pages
         uses: actions/configure-pages@v5
 
       - name: Download feeds
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: feeds
           pattern: owrt-feed-*
           merge-multiple: true
 
       - name: Download signing key
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: signing-key
           name: signing-key
@@ -221,7 +221,7 @@ jobs:
           GIT_COMMIT: '${{steps.checkout.outputs.commit}}'
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: feeds
 
