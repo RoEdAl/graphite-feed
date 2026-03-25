@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=carbon-relay-ng
-PKG_VERSION:=1.5.9
+PKG_VERSION:=1.5.12
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/grafana/carbon-relay-ng/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=d3f885ff60040632e40b4bf2f3f337e7080afe9c5e8a97110cddd287e67e3dd2
+PKG_HASH:=22aa042ff22fc7cfddb03fc18fd9b92f65c355d0d61afb4ab21d676cb157af70
 
 PKG_MAINTAINER:=Edmunt Pienkowsky <roed@onet.eu>
 PKG_LICENSE:=MIT
