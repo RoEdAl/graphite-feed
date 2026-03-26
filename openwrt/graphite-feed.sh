@@ -25,7 +25,7 @@ if [ -z "$ARCH" ]; then
   echoerr Error - unable to read architecture
   exit 1
 fi
-echoerr Architecture: $ARCH
+echo Architecture: $ARCH
 
 readonly FEED_URL="$FEEDS_URL/$ARCH/graphite"
 if ! test_feed "$FEED_URL"; then
@@ -33,22 +33,24 @@ if ! test_feed "$FEED_URL"; then
   exit 1
 fi
 
-eadonly REPO_LIST=/etc/apk/repositories.d/graphite.list
+readonly REPO_LIST=/etc/apk/repositories.d/graphite.list
 if [ ! -s "$REPO_LIST" ]; then
-  echoerr Installing repository: $FEED_URL
+  echo Repository: $FEED_URL
   echo "$FEED_URL/packages.adb" > $REPO_LIST
   if [ $? -ne 0 ]; then
+    echoerr Error installing repository
     exit 1
   fi
 fi
 
 readonly SIGNING_KEY="/etc/apk/keys/graphite.pem"
 if [ ! -s "$SIGNING_KEY" ]; then
-  echoerr Installing signing key
+  echo Installing signing key
   if ! wget -qO $SIGNING_KEY "$FEEDS_URL/signing-key/graphite.pem"; then
+    echoerr Error installing signing key
     exit 1
   fi
 fi
 
-echoerr Done
+echo Done
 exit 0
